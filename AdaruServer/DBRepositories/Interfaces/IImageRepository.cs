@@ -7,9 +7,9 @@ using Task = System.Threading.Tasks.Task;
 
 namespace AdaruServer.DBRepositories.Interfaces
 {
-    public interface IChatRepository
+    public interface IImageRepository
     {
-        Task<Chat> GetChat(int clientId1, int clientId2);
-        Task AddChat(Chat chat);
+        Task<Image> GetImage(int imageId);
+        Task AddImage(Image image);
     }
 }
