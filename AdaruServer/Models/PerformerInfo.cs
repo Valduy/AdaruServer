@@ -15,6 +15,7 @@ namespace AdaruServer.Models
         public string Resume { get; set; }
         public decimal? Raiting { get; set; }
         public long? Expirience { get; set; }
-        public ICollection<Tag> Tags { get; set; }
+        // TODO: теги
+        //public ICollection<Tag> Tags { get; set; }
     }
 }

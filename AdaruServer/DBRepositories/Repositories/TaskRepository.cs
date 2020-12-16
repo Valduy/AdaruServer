@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using AdaruServer.DBRepositories.Extensions;
 using AdaruServer.DBRepositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Task = AdaruServer.Models.Task;
@@ -29,10 +30,10 @@ namespace AdaruServer.DBRepositories.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<Models.Task>> GetTasks()
+        public async Task<List<Models.Task>> GetAllTasks()
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Tasks.ToListAsync();
+            return await context.Tasks.ToListAsyncSafe();
         }
 
         public async Task<List<Models.Task>> GetCustomerTasks(int customerId)

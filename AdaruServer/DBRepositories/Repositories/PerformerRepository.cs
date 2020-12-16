@@ -9,23 +9,23 @@ using AdaruServer.Models;
 
 namespace AdaruServer.DBRepositories.Repositories
 {
-    public class CustomerRepository : BaseRepository, ICustomerRepository
+    public class PerformerRepository : BaseRepository, IPerformerRepository
     {
-        public CustomerRepository(string connectionString, IRepositoryContextFactory contextFactory) 
+        public PerformerRepository(string connectionString, IRepositoryContextFactory contextFactory) 
             : base(connectionString, contextFactory)
         {
         }
 
-        public async Task<CustomerInfo> GetCustomer(int customerId)
+        public async Task<PerformerInfo> GetPerformer(int performerId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.CustomerInfos.FirstOrDefaultAsync(ci => ci.Id == customerId);
+            return await context.PerformerInfos.FirstOrDefaultAsync(pi => pi.Id == performerId);
         }
 
-        public async Task<List<CustomerInfo>> GetCustomers()
+        public async Task<List<PerformerInfo>> GetPerformers()
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.CustomerInfos.ToListAsyncSafe();
+            return await context.PerformerInfos.ToListAsyncSafe();
         }
     }
 }

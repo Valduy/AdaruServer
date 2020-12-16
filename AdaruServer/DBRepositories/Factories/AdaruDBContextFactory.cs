@@ -13,7 +13,7 @@ namespace AdaruServer.DBRepositories.Factories
         public AdaruDBContext CreateDbContext(string connectionString)
         {
             var optionsBuilder = new DbContextOptionsBuilder<AdaruDBContext>();
-            optionsBuilder.UseNpgsql();
+            optionsBuilder.UseNpgsql(connectionString);
             return new AdaruDBContext(optionsBuilder.Options);
         }
     }

@@ -9,7 +9,7 @@ namespace AdaruServer.DBRepositories.Interfaces
     {
         Task<Models.Task> GetTask(int taskId);
         Task AddTask(Models.Task task);
-        Task<List<Models.Task>> GetTasks();
+        Task<List<Models.Task>> GetAllTasks();
         Task<List<Models.Task>> GetCustomerTasks(int customerId);
     }
 }

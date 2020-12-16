@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using AdaruServer.DBRepositories.Extensions;
 using AdaruServer.DBRepositories.Interfaces;
 using AdaruServer.Models;
 using Task = System.Threading.Tasks.Task;
@@ -32,13 +33,13 @@ namespace AdaruServer.DBRepositories.Repositories
         public async Task<List<Review>> GetReviewsAboutClient(int clientId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Reviews.Where(r => r.IdTarget == clientId).ToListAsync();
+            return await context.Reviews.Where(r => r.IdTarget == clientId).ToListAsyncSafe();
         }
 
         public async Task<List<Review>> GetClientReviews(int clientId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Reviews.Where(r => r.IdSource == clientId).ToListAsync();
+            return await context.Reviews.Where(r => r.IdSource == clientId).ToListAsyncSafe();
         }
     }
 }

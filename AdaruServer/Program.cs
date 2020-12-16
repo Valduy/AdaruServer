@@ -15,12 +15,6 @@ namespace AdaruServer
     {
         public static void Main(string[] args)
         {
-            using var db = new AdaruDBContext();
-            foreach (var C in db.Clients)
-            {
-                Debug.WriteLine(C.Login);
-            }
-
             CreateHostBuilder(args).Build().Run();
         }
 
