@@ -8,23 +8,20 @@ using Task = AdaruServer.Models.Task;
 
 namespace AdaruServer.Controllers
 {
-    //[Route("api/[controller]")]
+    [Route("api")]
     public class TaskController : Controller
     {
         private ITaskRepository _taskRepository;
 
         public TaskController(ITaskRepository taskRepository) 
             => _taskRepository = taskRepository;
-
+        
         [Route("tasks")]
         [HttpGet]
         public async Task<List<Models.Task>> GetTasks()
         {
+            // TODO: потенциально, здесь может быть исключение, если задач нет...
             return await _taskRepository.GetAllTasks();
         }
-        //public List<Models.Task> GetTasks()
-        //{
-        //    return _taskRepository.Get();
-        //}
     }
 }
