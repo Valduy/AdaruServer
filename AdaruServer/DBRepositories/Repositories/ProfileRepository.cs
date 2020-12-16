@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AdaruServer.DBRepositories.Interfaces;
 using AdaruServer.Models;
+using Microsoft.EntityFrameworkCore;
 using Task = System.Threading.Tasks.Task;
 
 namespace AdaruServer.DBRepositories.Repositories
@@ -15,29 +16,58 @@ namespace AdaruServer.DBRepositories.Repositories
         {
         }
 
-        public Task<Profile> GetProfile(int profileId)
+        public async Task<Profile> GetProfile(int profileId)
         {
-            throw new NotImplementedException();
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return await context.Profiles.FirstOrDefaultAsync(p => p.IdClient == profileId);
         }
 
-        public Task AddProfile(Profile profile)
+        public async Task AddProfile(Profile profile)
         {
-            throw new NotImplementedException();
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            await context.AddAsync(profile);
+            await context.SaveChangesAsync();
         }
 
-        public Task AddImage(Image image)
+        public async Task AddImage(Profile profile, Image image)
         {
-            throw new NotImplementedException();
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            await context.ProfileImages.AddAsync(new ProfileImage()
+            {
+                IdProfile = profile.IdClient,
+                IdImage = image.Id
+            });
+            await context.SaveChangesAsync();
         }
 
-        public Task AddImages(IEnumerable<Image> images)
+        public async Task AddImages(Profile profile, IEnumerable<Image> images)
         {
-            throw new NotImplementedException();
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+
+            foreach (var image in images)
+            {
+                await context.ProfileImages.AddAsync(new ProfileImage()
+                {
+                    IdProfile = profile.IdClient,
+                    IdImage = image.Id
+                });
+            }
+
+            await context.SaveChangesAsync();
         }
 
-        public Task RemoveImage(Image image)
+        public async Task RemoveImage(Profile profile, Image image)
         {
-            throw new NotImplementedException();
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var profileImage = await context.ProfileImages.FirstOrDefaultAsync(
+                pi => pi.IdProfile == profile.IdClient && pi.IdImage == image.Id);
+
+            if (profileImage != null)
+            {
+                context.ProfileImages.Remove(profileImage);
+            }
+
+            await context.SaveChangesAsync();
         }
     }
 }

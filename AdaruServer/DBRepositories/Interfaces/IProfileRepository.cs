@@ -11,8 +11,8 @@ namespace AdaruServer.DBRepositories.Interfaces
     {
         Task<Profile> GetProfile(int profileId);
         Task AddProfile(Profile profile);
-        Task AddImage(Image image);
-        Task AddImages(IEnumerable<Image> images);
-        Task RemoveImage(Image image);
+        Task AddImage(Profile profile, Image image);
+        Task AddImages(Profile profile, IEnumerable<Image> images);
+        Task RemoveImage(Profile profile, Image image);
     }
 }
