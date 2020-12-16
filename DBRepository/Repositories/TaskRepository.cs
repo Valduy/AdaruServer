@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AdaruServer.DBRepositories.Extensions;
 using AdaruServer.DBRepositories.Interfaces;
+using AdaruServer.Models;
 using Microsoft.EntityFrameworkCore;
 using Task = AdaruServer.Models.Task;
 
@@ -39,7 +40,15 @@ namespace AdaruServer.DBRepositories.Repositories
         public async Task<List<Models.Task>> GetCustomerTasks(int customerId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Tasks.Where(t => t.IdCustomer == customerId).ToListAsync();
+            return await context.Tasks.Where(t => t.IdCustomer == customerId).ToListAsyncSafe();
+        }
+
+        public async Task<List<Tag>> GetTaskTags(int taskId)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return await context.Tags.Where(t => context.TaskTags
+                .Where(tt => tt.IdTask == taskId)
+                .Select(tt => tt.IdTag).Contains(t.Id)).ToListAsyncSafe();
         }
     }
 }

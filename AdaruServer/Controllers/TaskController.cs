@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaruServer.DBRepositories.Interfaces;
+using AdaruServer.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Task = AdaruServer.Models.Task;
 
@@ -16,12 +17,37 @@ namespace AdaruServer.Controllers
         public TaskController(ITaskRepository taskRepository) 
             => _taskRepository = taskRepository;
         
-        [Route("tasks")]
+        [Route("tasks/all")]
         [HttpGet]
-        public async Task<List<Models.Task>> GetTasks()
+        // TODO: потенциально, возможно, здесь может быть исключение, если задач нет...
+        public async Task<List<TaskViewModel>> GetTasks()
         {
-            // TODO: потенциально, здесь может быть исключение, если задач нет...
-            return await _taskRepository.GetAllTasks();
+            var tasks = await _taskRepository.GetAllTasks();
+            return await CreateTasksViewModelsAsync(tasks);
+        }
+
+        [Route("tasks/customer")]
+        [HttpGet]
+        public async Task<List<TaskViewModel>> GetCustomerTasks(int id)
+        {
+            var tasks = await _taskRepository.GetCustomerTasks(id);
+            return await CreateTasksViewModelsAsync(tasks);
+        }
+
+        private async Task<List<TaskViewModel>> CreateTasksViewModelsAsync(List<Task> tasks)
+        {
+            var result = new List<TaskViewModel>();
+
+            foreach (var t in tasks)
+            {
+                result.Add(new TaskViewModel
+                {
+                    Task = t,
+                    Tags = await _taskRepository.GetTaskTags(t.Id)
+                });
+            }
+
+            return result;
         }
     }
 }

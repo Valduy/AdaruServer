@@ -75,7 +75,7 @@ namespace AdaruServer
             //app.UseMvc(routes =>
             //{
             //    routes.MapRoute(
-            //        name: "DefaultApi", 
+            //        name: "DefaultApi",
             //        template: "api/{controller}/{action}/{id?}");
             //});
         }
