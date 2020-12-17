@@ -6,11 +6,10 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using DBRepository.Extensions;
 using DBRepository.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Models;
 using Task = Models.Task;
 
-namespace AdaruServer.DBRepositories.Repositories
+namespace DBRepository.Repositories
 {
     public class TaskRepository : BaseRepository, ITaskRepository
     {

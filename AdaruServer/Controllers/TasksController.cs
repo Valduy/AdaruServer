@@ -13,10 +13,19 @@ namespace AdaruServer.Controllers
     public class TasksController : Controller
     {
         private ITaskRepository _taskRepository;
+        private IClientRepository _clientRepository;
+        private IStatusRepository _statusRepository;
 
-        public TasksController(ITaskRepository taskRepository) 
-            => _taskRepository = taskRepository;
-        
+        public TasksController(
+            ITaskRepository taskRepository, 
+            IClientRepository clientRepository, 
+            IStatusRepository statusRepository)
+        {
+            _taskRepository = taskRepository;
+            _clientRepository = clientRepository;
+            _statusRepository = statusRepository;
+        }
+
         // api/tasks/all
         [HttpGet("all")]
         public async Task<List<TaskViewModel>> GetTasks()
@@ -41,6 +50,11 @@ namespace AdaruServer.Controllers
             return await CreateTasksViewModelsAsync(tasks);
         }
 
+        public async Task<List<TaskViewModel>> GetPerformerTasks(int id)
+        {
+            return null;
+        }
+
         private async Task<List<TaskViewModel>> CreateTasksViewModelsAsync(List<Task> tasks)
         {
             var result = new List<TaskViewModel>();
@@ -50,7 +64,8 @@ namespace AdaruServer.Controllers
                 result.Add(new TaskViewModel
                 {
                     Task = t,
-                    Tags = await _taskRepository.GetTaskTags(t.Id)
+                    Tags = await _taskRepository.GetTaskTags(t.Id),
+                    Status = (await _statusRepository.GetTaskStatus(t.IdStatus)).Status
                 });
             }
 

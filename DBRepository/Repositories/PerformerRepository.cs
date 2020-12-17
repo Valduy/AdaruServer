@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
 using System.Threading.Tasks;
 using DBRepository.Extensions;
 using DBRepository.Interfaces;
 using Models;
 
-namespace AdaruServer.DBRepositories.Repositories
+namespace DBRepository.Repositories
 {
     public class PerformerRepository : BaseRepository, IPerformerRepository
     {

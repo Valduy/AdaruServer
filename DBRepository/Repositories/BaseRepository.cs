@@ -1,6 +1,6 @@
 ﻿using DBRepository.Interfaces;
 
-namespace AdaruServer.DBRepositories.Repositories
+namespace DBRepository.Repositories
 {
     public class BaseRepository
     {

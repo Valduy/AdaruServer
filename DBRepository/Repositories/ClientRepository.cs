@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Data.Entity;
 using System.Threading.Tasks;
 using DBRepository.Interfaces;
 using Models;
 using Task = System.Threading.Tasks.Task;
 
-namespace AdaruServer.DBRepositories.Repositories
+namespace DBRepository.Repositories
 {
     public class ClientRepository : BaseRepository, IClientRepository
     {

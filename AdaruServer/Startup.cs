@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaruServer.DBRepositories.Repositories;
 using DBRepository.Factories;
 using DBRepository.Interfaces;
+using DBRepository.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -53,6 +53,9 @@ namespace AdaruServer
                     provider.GetService<IRepositoryContextFactory>()));
             services.AddScoped<IReviewRepository>(provider
                 => new ReviewRepository(Configuration.GetConnectionString("DefaultConnection"),
+                    provider.GetService<IRepositoryContextFactory>()));
+            services.AddScoped<IStatusRepository>(provider
+                => new StatusRepository(Configuration.GetConnectionString("DefaultConnection"),
                     provider.GetService<IRepositoryContextFactory>()));
             services.AddScoped<ITagRepository>(provider
                 => new TagRepository(Configuration.GetConnectionString("DefaultConnection"),
