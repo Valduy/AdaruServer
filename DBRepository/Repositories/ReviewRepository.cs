@@ -19,7 +19,7 @@ namespace DBRepository.Repositories
         public async Task<Review> GetReview(int reviewId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Reviews.FirstOrDefaultAsync(r => r.Id == reviewId);
+            return context.Reviews.FirstOrDefault(r => r.Id == reviewId);
         }
 
         public async Task AddReview(Review review)

@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using DBRepository.Interfaces;
 using Models;
@@ -16,13 +17,13 @@ namespace DBRepository.Repositories
         public async Task<Client> GetClient(int clientId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
+            return context.Clients.FirstOrDefault(c => c.Id == clientId);
         }
 
         public async Task<Client> GetClient(string login)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Clients.FirstOrDefaultAsync(c => c.Login == login);
+            return context.Clients.FirstOrDefault(c => c.Login == login);
         }
 
         public async Task AddClient(Client client)

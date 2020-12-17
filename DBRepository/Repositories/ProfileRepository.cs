@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DBRepository.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace DBRepository.Repositories
         public async Task<Profile> GetProfile(int profileId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Profiles.FirstOrDefaultAsync(p => p.IdClient == profileId);
+            return context.Profiles.FirstOrDefault(p => p.IdClient == profileId);
         }
 
         public async Task AddProfile(Profile profile)

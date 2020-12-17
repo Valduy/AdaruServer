@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using DBRepository.Extensions;
 using DBRepository.Interfaces;
@@ -17,7 +18,7 @@ namespace DBRepository.Repositories
         public async Task<CustomerInfo> GetCustomer(int customerId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.CustomerInfos.FirstOrDefaultAsync(ci => ci.Id == customerId);
+            return context.CustomerInfos.FirstOrDefault(ci => ci.Id == customerId);
         }
 
         public async Task<List<CustomerInfo>> GetCustomers()

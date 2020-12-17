@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using DBRepository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -16,7 +17,7 @@ namespace DBRepository.Repositories
         public async Task<Image> GetImage(int imageId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Images.FirstOrDefaultAsync(i => i.Id == imageId);
+            return context.Images.FirstOrDefault(i => i.Id == imageId);
         }
 
         public async Task AddImage(Image image)

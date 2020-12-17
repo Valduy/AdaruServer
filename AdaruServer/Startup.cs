@@ -54,6 +54,9 @@ namespace AdaruServer
             services.AddScoped<IReviewRepository>(provider
                 => new ReviewRepository(Configuration.GetConnectionString("DefaultConnection"),
                     provider.GetService<IRepositoryContextFactory>()));
+            services.AddScoped<IRoleRepository>(provider
+                => new RoleRepository(Configuration.GetConnectionString("DefaultConnection"),
+                    provider.GetService<IRepositoryContextFactory>()));
             services.AddScoped<IStatusRepository>(provider
                 => new StatusRepository(Configuration.GetConnectionString("DefaultConnection"),
                     provider.GetService<IRepositoryContextFactory>()));

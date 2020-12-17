@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using DBRepository.Extensions;
 using DBRepository.Interfaces;
@@ -17,7 +18,7 @@ namespace DBRepository.Repositories
         public async Task<Tag> GetTag(int tagId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Tags.FirstOrDefaultAsync(t => t.Id == tagId);
+            return context.Tags.FirstOrDefault(t => t.Id == tagId);
         }
 
         public async Task<List<Tag>> GetAllTags()

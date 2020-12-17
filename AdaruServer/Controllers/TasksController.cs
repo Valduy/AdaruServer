@@ -14,15 +14,18 @@ namespace AdaruServer.Controllers
     {
         private ITaskRepository _taskRepository;
         private IClientRepository _clientRepository;
+        private IRoleRepository _roleRepository;
         private IStatusRepository _statusRepository;
 
         public TasksController(
             ITaskRepository taskRepository, 
-            IClientRepository clientRepository, 
+            IClientRepository clientRepository,
+            IRoleRepository roleRepository,
             IStatusRepository statusRepository)
         {
             _taskRepository = taskRepository;
             _clientRepository = clientRepository;
+            _roleRepository = roleRepository;
             _statusRepository = statusRepository;
         }
 
@@ -50,9 +53,12 @@ namespace AdaruServer.Controllers
             return await CreateTasksViewModelsAsync(tasks);
         }
 
+        // api/tasks/performer?id=1
+        [HttpGet("performer")]
         public async Task<List<TaskViewModel>> GetPerformerTasks(int id)
         {
-            return null;
+            var tasks = await _taskRepository.GetPerformerTasks(id);
+            return await CreateTasksViewModelsAsync(tasks);
         }
 
         private async Task<List<TaskViewModel>> CreateTasksViewModelsAsync(List<Task> tasks)
@@ -61,11 +67,20 @@ namespace AdaruServer.Controllers
 
             foreach (var t in tasks)
             {
+                var customer = await _clientRepository.GetClient(t.IdCustomer);
+
                 result.Add(new TaskViewModel
                 {
                     Task = t,
                     Tags = await _taskRepository.GetTaskTags(t.Id),
-                    Status = (await _statusRepository.GetTaskStatus(t.IdStatus)).Status
+                    Status = (await _statusRepository.GetTaskStatus(t.IdStatus)).Status,
+                    Customer = new ClientViewModel()
+                    {
+                        Id = customer.Id,
+                        Login = customer.Login,
+                        Role = (await _roleRepository.GetUserRole(customer.IdRole)).Role,
+                        Username = customer.Username
+                    }
                 });
             }
 

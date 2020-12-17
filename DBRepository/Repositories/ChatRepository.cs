@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using DBRepository.Interfaces;
 using Models;
@@ -16,7 +17,7 @@ namespace DBRepository.Repositories
         public async Task<Chat> GetChat(int clientId1, int clientId2)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Chats.FirstOrDefaultAsync(c
+            return context.Chats.FirstOrDefault(c
                 => c.IdSource == clientId1 && c.IdTarget == clientId2
                 || c.IdSource == clientId2 && c.IdTarget == clientId1);
         }

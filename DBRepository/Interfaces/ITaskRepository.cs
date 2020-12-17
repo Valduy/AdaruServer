@@ -15,6 +15,7 @@ namespace DBRepository.Interfaces
         Task<List<Models.Task>> GetTasks(Expression<Func<Models.Task, bool>> predicate);
         Task<List<Models.Task>> GetNewTasks();
         Task<List<Models.Task>> GetCustomerTasks(int customerId);
+        Task<List<Models.Task>> GetPerformerTasks(int performerId);
         Task<List<Tag>> GetTaskTags(int taskId);
     }
 }

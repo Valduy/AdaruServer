@@ -5,27 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using DBRepository.Extensions;
 using DBRepository.Interfaces;
-using TaskStatus = Models.TaskStatus;
+using Models;
 
 namespace DBRepository.Repositories
 {
-    public class StatusRepository : BaseRepository, IStatusRepository
+    public class RoleRepository : BaseRepository, IRoleRepository
     {
-        public StatusRepository(string connectionString, IRepositoryContextFactory contextFactory) 
+        public RoleRepository(string connectionString, IRepositoryContextFactory contextFactory) 
             : base(connectionString, contextFactory)
         {
         }
 
-        public async Task<TaskStatus> GetTaskStatus(int statusId)
+        public async Task<UserRole> GetUserRole(int roleId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return context.TaskStatuses.FirstOrDefault(ts => ts.Id == statusId);
+            return context.UserRoles.FirstOrDefault(ur => ur.Id == roleId);
         }
 
-        public async Task<List<TaskStatus>> GetAllTaskStatuses()
+        public async Task<List<UserRole>> GetAllUserRoles()
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.TaskStatuses.ToListAsyncSafe();
+            return await context.UserRoles.ToListAsyncSafe();
         }
     }
 }

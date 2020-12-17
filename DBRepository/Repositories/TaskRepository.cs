@@ -57,6 +57,12 @@ namespace DBRepository.Repositories
             return await context.Tasks.Where(t => t.IdCustomer == customerId).ToListAsyncSafe();
         }
 
+        public async Task<List<Task>> GetPerformerTasks(int performerId)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return await context.Tasks.Where(t => t.IdPerformer == performerId).ToListAsyncSafe();
+        }
+
         public async Task<List<Tag>> GetTaskTags(int taskId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
