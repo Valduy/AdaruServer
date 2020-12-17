@@ -9,39 +9,38 @@ using Task = Models.Task;
 
 namespace AdaruServer.Controllers
 {
-    [Route("api")]
-    public class TaskController : Controller
+    [Route("api/[controller]")]
+    public class TasksController : Controller
     {
         private ITaskRepository _taskRepository;
 
-        public TaskController(ITaskRepository taskRepository) 
+        public TasksController(ITaskRepository taskRepository) 
             => _taskRepository = taskRepository;
         
-        [Route("tasks/all")]
-        [HttpGet]
-        // TODO: потенциально, возможно, здесь может быть исключение, если задач нет...
+        // api/tasks/all
+        [HttpGet("all")]
         public async Task<List<TaskViewModel>> GetTasks()
         {
             var tasks = await _taskRepository.GetAllTasks();
             return await CreateTasksViewModelsAsync(tasks);
         }
 
-        [Route("tasks/new")]
-        [HttpGet]
+        // api/tasks/new
+        [HttpGet("new")]
         public async Task<List<TaskViewModel>> GetNewTasks()
         {
             var tasks = await _taskRepository.GetNewTasks();
             return await CreateTasksViewModelsAsync(tasks);
         }
 
-        [Route("tasks/customer")]
-        [HttpGet]
+        // api/tasks/customer?id=1
+        [HttpGet("customer")]
         public async Task<List<TaskViewModel>> GetCustomerTasks(int id)
         {
             var tasks = await _taskRepository.GetCustomerTasks(id);
             return await CreateTasksViewModelsAsync(tasks);
         }
-        
+
         private async Task<List<TaskViewModel>> CreateTasksViewModelsAsync(List<Task> tasks)
         {
             var result = new List<TaskViewModel>();

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using DBRepository.Extensions;
 using DBRepository.Interfaces;
@@ -31,16 +32,16 @@ namespace AdaruServer.DBRepositories.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<Task>> GetAllTasks()
+        public async Task<List<Models.Task>> GetAllTasks()
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             return await context.Tasks.ToListAsyncSafe();
         }
 
-        public async Task<List<Task>> GetTasks(Predicate<Task> predicate)
+        public async Task<List<Models.Task>> GetTasks(Expression<Func<Models.Task, bool>> predicate)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Tasks.Where(t => predicate(t)).ToListAsyncSafe();
+            return await context.Tasks.Where(predicate).ToListAsyncSafe();
         }
 
         public async Task<List<Task>> GetNewTasks()
