@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaruServer.DBRepositories.Interfaces;
-using AdaruServer.Models;
+using DBRepository.Interfaces;
+using Models;
 using EntityState = Microsoft.EntityFrameworkCore.EntityState;
 using Task = System.Threading.Tasks.Task;
 

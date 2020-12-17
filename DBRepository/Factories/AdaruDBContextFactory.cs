@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AdaruServer.DBRepositories.Interfaces;
-using AdaruServer.Models;
+﻿using DBRepository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace AdaruServer.DBRepositories.Factories
+namespace DBRepository.Factories
 {
     public class AdaruDBContextFactory : IRepositoryContextFactory
     {

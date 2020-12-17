@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace AdaruServer.DBRepositories.Extensions
+namespace DBRepository.Extensions
 {
     public static class IQueryableExtension
     {

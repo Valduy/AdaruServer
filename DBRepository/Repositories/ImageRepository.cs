@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaruServer.DBRepositories.Interfaces;
-using AdaruServer.Models;
+using DBRepository.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace AdaruServer.DBRepositories.Repositories

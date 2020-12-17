@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 #nullable disable
 
-namespace AdaruServer.Models
+namespace Models
 {
     public partial class TaskStatus
     {

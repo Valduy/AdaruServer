@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaruServer.DBRepositories.Interfaces;
 using AdaruServer.ViewModels;
+using DBRepository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Task = AdaruServer.Models.Task;
+using Task = Models.Task;
 
 namespace AdaruServer.Controllers
 {
@@ -26,6 +26,14 @@ namespace AdaruServer.Controllers
             return await CreateTasksViewModelsAsync(tasks);
         }
 
+        [Route("tasks/new")]
+        [HttpGet]
+        public async Task<List<TaskViewModel>> GetNewTasks()
+        {
+            var tasks = await _taskRepository.GetNewTasks();
+            return await CreateTasksViewModelsAsync(tasks);
+        }
+
         [Route("tasks/customer")]
         [HttpGet]
         public async Task<List<TaskViewModel>> GetCustomerTasks(int id)
@@ -33,7 +41,7 @@ namespace AdaruServer.Controllers
             var tasks = await _taskRepository.GetCustomerTasks(id);
             return await CreateTasksViewModelsAsync(tasks);
         }
-
+        
         private async Task<List<TaskViewModel>> CreateTasksViewModelsAsync(List<Task> tasks)
         {
             var result = new List<TaskViewModel>();

@@ -1,10 +1,9 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
+using Models;
 
 #nullable disable
 
-namespace AdaruServer.Models
+namespace DBRepository
 {
     public partial class AdaruDBContext : DbContext
     {

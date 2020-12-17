@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaruServer.DBRepositories.Extensions;
-using AdaruServer.DBRepositories.Interfaces;
-using AdaruServer.Models;
+using DBRepository.Extensions;
+using DBRepository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Task = AdaruServer.Models.Task;
+using Models;
+using Task = Models.Task;
 
 namespace AdaruServer.DBRepositories.Repositories
 {
@@ -18,26 +18,40 @@ namespace AdaruServer.DBRepositories.Repositories
         {
         }
 
-        public async Task<Models.Task> GetTask(int taskId)
+        public async Task<Task> GetTask(int taskId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             return await context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
         }
 
-        public async System.Threading.Tasks.Task AddTask(Models.Task task)
+        public async System.Threading.Tasks.Task AddTask(Task task)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             await context.AddAsync(task);
             await context.SaveChangesAsync();
         }
 
-        public async Task<List<Models.Task>> GetAllTasks()
+        public async Task<List<Task>> GetAllTasks()
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             return await context.Tasks.ToListAsyncSafe();
         }
 
-        public async Task<List<Models.Task>> GetCustomerTasks(int customerId)
+        public async Task<List<Task>> GetTasks(Predicate<Task> predicate)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return await context.Tasks.Where(t => predicate(t)).ToListAsyncSafe();
+        }
+
+        public async Task<List<Task>> GetNewTasks()
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return await context.Tasks
+                .Where(t => t.IdStatus == context.TaskStatuses.First(s => s.Status == "new").Id)
+                .ToListAsyncSafe();
+        }
+
+        public async Task<List<Task>> GetCustomerTasks(int customerId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             return await context.Tasks.Where(t => t.IdCustomer == customerId).ToListAsyncSafe();

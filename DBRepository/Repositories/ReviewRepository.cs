@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using AdaruServer.DBRepositories.Extensions;
-using AdaruServer.DBRepositories.Interfaces;
-using AdaruServer.Models;
+using DBRepository.Extensions;
+using DBRepository.Interfaces;
+using Models;
 using Task = System.Threading.Tasks.Task;
 
 namespace AdaruServer.DBRepositories.Repositories

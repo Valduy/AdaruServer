@@ -1,4 +1,4 @@
-﻿using AdaruServer.DBRepositories.Interfaces;
+﻿using DBRepository.Interfaces;
 
 namespace AdaruServer.DBRepositories.Repositories
 {
