@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using AdaruServer.Helpers;
 using DBRepository.Factories;
 using DBRepository.Interfaces;
 using DBRepository.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace AdaruServer
 {
@@ -29,6 +32,22 @@ namespace AdaruServer
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidIssuer = AuthorizationOptions.ISSUER,
+                        ValidAudience = AuthorizationOptions.AUDIENCE,
+                        IssuerSigningKey = AuthorizationOptions.GetSymmetricSecurityKey(),
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
             services.AddMvc(mvcOptions => mvcOptions.EnableEndpointRouting = false);
 
             services.AddScoped<IRepositoryContextFactory, AdaruDBContextFactory>();
