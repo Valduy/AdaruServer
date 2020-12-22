@@ -12,5 +12,6 @@ namespace DBRepository.Interfaces
         Task AddImage(Profile profile, Image image);
         Task AddImages(Profile profile, IEnumerable<Image> images);
         Task RemoveImage(Profile profile, Image image);
+        Task UpdateProfile(Profile profile);
     }
 }

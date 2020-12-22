@@ -31,7 +31,7 @@ namespace AdaruServer.Controllers
         // api/profile/add
         [Authorize]
         [HttpPost("add")]
-        public async Task<IActionResult> AddProfile([FromBody] string resume)
+        public async Task<IActionResult> AddProfile([FromBody]string resume)
         {
             try
             {
@@ -56,6 +56,27 @@ namespace AdaruServer.Controllers
             var userId = User.GetName();
             var profile = await _profileRepository.GetProfile(int.Parse(userId));
             return _mapper.Map<ProfileViewModel>(profile);
+        }
+
+        // api/profile/update
+        [Authorize]
+        [HttpPost("update")]
+        public async Task<IActionResult> UpdateProfile([FromBody]string resume)
+        {
+            try
+            {
+                var userId = User.GetName();
+                var profile = await _profileRepository.GetProfile(int.Parse(userId));
+                profile.Resume = resume;
+                await _profileRepository.UpdateProfile(profile);
+                _mapper.Map<ProfileViewModel>(profile);
+            }
+            catch (RepositoryException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
+            return Ok();
         }
     }
 }

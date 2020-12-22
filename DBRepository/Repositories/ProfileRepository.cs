@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DBRepository.Interfaces;
@@ -83,6 +84,15 @@ namespace DBRepository.Repositories
                 context.ProfileImages.Remove(profileImage);
             }
 
+            await context.SaveChangesAsync();
+        }
+
+        public async Task UpdateProfile(Profile profile)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var entry = context.Profiles.FirstOrDefault(p => p.IdClient == profile.IdClient);
+            if (entry == null) throw new ArgumentException("У клиента нет профиля.");
+            context.Entry(entry).CurrentValues.SetValues(profile);
             await context.SaveChangesAsync();
         }
     }
