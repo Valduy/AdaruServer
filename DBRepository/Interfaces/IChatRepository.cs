@@ -7,6 +7,7 @@ namespace DBRepository.Interfaces
 {
     public interface IChatRepository
     {
+        Task<Chat> GetChat(int chatId);
         Task<Chat> GetChat(int clientId1, int clientId2);
         Task<List<Chat>> GetChats(int id);
         Task AddChat(Chat chat);

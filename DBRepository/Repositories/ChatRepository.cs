@@ -16,6 +16,12 @@ namespace DBRepository.Repositories
         {
         }
 
+        public async Task<Chat> GetChat(int chatId)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return context.Chats.FirstOrDefault(c => c.Id == chatId);
+        }
+
         public async Task<Chat> GetChat(int clientId1, int clientId2)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);

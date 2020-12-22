@@ -8,6 +8,7 @@ namespace AdaruServer.ViewModels
 {
     public class ChatViewModel
     {
+        public int Id { get; set; }
         public ClientViewModel Target { get; set; }
         public IEnumerable<MessageViewModel> Messages { get; set; }
     }

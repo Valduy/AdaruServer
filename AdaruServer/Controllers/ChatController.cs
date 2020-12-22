@@ -54,12 +54,25 @@ namespace AdaruServer.Controllers
         public async Task<ChatViewModel> GetChat(int id)
         {
             var chat = await _chatRepository.GetChat(int.Parse(User.GetName()), id);
-            var result = new ChatViewModel();
+            var result = _mapper.Map<ChatViewModel>(chat);
             var client = await _clientRepository.GetClient(chat.IdTarget);
             result.Target = _mapper.Map<ClientViewModel>(client);
             result.Messages =
                 (await _messageRepository.GetMessages(chat.Id)).Select(m => _mapper.Map<MessageViewModel>(m));
             return result;
+        }
+
+        // api/chat/add
+        [Authorize]
+        [HttpGet("add")]
+        public async Task AddMessage([FromBody]MessageViewModel model)
+        {
+            var userId = User.GetName();
+            var chat = await _chatRepository.GetChat(model.Id);
+            if (chat == null)
+            {
+                //TODO: проверить, чтоб нельзя было в другой чат написать (не свой)
+            }
         }
     }
 }
