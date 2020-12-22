@@ -23,7 +23,7 @@ namespace DBRepository.Repositories
         public async Task<Task> GetTask(int taskId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Tasks.FirstOrDefaultAsync(t => t.Id == taskId);
+            return context.Tasks.FirstOrDefault(t => t.Id == taskId);
         }
 
         public async System.Threading.Tasks.Task AddTask(Task task)
@@ -87,6 +87,17 @@ namespace DBRepository.Repositories
             return await context.Tags.Where(t => context.TaskTags
                 .Where(tt => tt.IdTask == taskId)
                 .Select(tt => tt.IdTag).Contains(t.Id)).ToListAsyncSafe();
+        }
+
+        public async System.Threading.Tasks.Task ChangeTaskStatus(int taskId, string status)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var task = context.Tasks.FirstOrDefault(t => t.Id == taskId) 
+                       ?? throw new RepositoryException("Такой задачи не существует.");
+            var temp = context.TaskStatuses.FirstOrDefault(ts => ts.Status == status)
+                       ?? throw new RepositoryException("Нет такого статуса.");
+            task.IdStatus =  temp.Id;
+            await context.SaveChangesAsync();
         }
     }
 }

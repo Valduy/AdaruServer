@@ -108,6 +108,35 @@ namespace AdaruServer.Controllers
             return Ok();
         }
 
+        // api/tasks/status?id=1
+        [Authorize]
+        [HttpPost("status")]
+        public async Task<IActionResult> ChangeTaskStatus(int id, [FromBody]string status)
+        {
+            var userId = User.GetName();
+            var task = await _taskRepository.GetTask(id);
+
+            if (task == null)
+            {
+                return BadRequest(new {message="Такой задачи нет."});
+            }
+            if (task.IdCustomer != int.Parse(userId))
+            {
+                return BadRequest(new {message="Попытка изменить не свою задачу"});
+            }
+
+            try
+            {
+                await _taskRepository.ChangeTaskStatus(id, status);
+            }
+            catch (RepositoryException ex)
+            {
+                return BadRequest(new {message = ex.Message});
+            }
+
+            return Ok();
+        }
+
         private async Task<List<TaskViewModel>> CreateTasksViewModelsAsync(List<Task> tasks)
         {
             var result = new List<TaskViewModel>();

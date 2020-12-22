@@ -17,5 +17,6 @@ namespace DBRepository.Interfaces
         Task<List<Models.Task>> GetCustomerTasks(int customerId);
         Task<List<Models.Task>> GetPerformerTasks(int performerId);
         Task<List<Tag>> GetTaskTags(int taskId);
+        Task ChangeTaskStatus(int taskId, string status);
     }
 }
