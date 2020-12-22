@@ -15,15 +15,18 @@ namespace AdaruServer.Controllers
     public class ChatController : Controller
     {
         private IChatRepository _chatRepository;
+        private IMessageRepository _messageRepository;
         private IClientRepository _clientRepository;
         private IMapper _mapper;
 
         public ChatController(
             IChatRepository chatRepository,
+            IMessageRepository messageRepository,
             IClientRepository clientRepository,
             IMapper mapper)
         {
             _chatRepository = chatRepository;
+            _messageRepository = messageRepository;
             _clientRepository = clientRepository;
             _mapper = mapper;
         }
@@ -42,6 +45,20 @@ namespace AdaruServer.Controllers
                 result.Add(_mapper.Map<ClientViewModel>(client));
             }
 
+            return result;
+        }
+
+        // api/chat/client
+        [Authorize]
+        [HttpGet("client")]
+        public async Task<ChatViewModel> GetChat(int id)
+        {
+            var chat = await _chatRepository.GetChat(int.Parse(User.GetName()), id);
+            var result = new ChatViewModel();
+            var client = await _clientRepository.GetClient(chat.IdTarget);
+            result.Target = _mapper.Map<ClientViewModel>(client);
+            result.Messages =
+                (await _messageRepository.GetMessages(chat.Id)).Select(m => _mapper.Map<MessageViewModel>(m));
             return result;
         }
     }

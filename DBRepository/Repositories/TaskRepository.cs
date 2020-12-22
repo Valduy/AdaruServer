@@ -31,7 +31,7 @@ namespace DBRepository.Repositories
             try
             {
                 await using var context = ContextFactory.CreateDbContext(ConnectionString);
-                await context.AddAsync(task);
+                await context.Tasks.AddAsync(task);
                 await context.SaveChangesAsync();
             }
             catch (DbUpdateException ex)

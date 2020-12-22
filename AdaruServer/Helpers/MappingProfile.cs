@@ -19,6 +19,7 @@ namespace AdaruServer.Helpers
             CreateMap<Models.Profile, ProfileViewModel>();
             CreateMap<Review, ReviewViewModel>();
             CreateMap<AddReviewViewModel, Review>();
+            CreateMap<Message, MessageViewModel>();
             CreateMap<string, Tag>()
                 .ForMember(m => m.Name, opt => opt.MapFrom(m => m));
             CreateMap<string, Models.Profile>()
