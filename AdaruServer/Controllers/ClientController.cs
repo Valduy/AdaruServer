@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AdaruServer.Helpers;
 using AdaruServer.ViewModels;
+using DBRepository;
 using DBRepository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -58,15 +59,26 @@ namespace AdaruServer.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]RegistrationViewModel model)
         {
-            await _clientRepository.AddClient(new Client
+            try
             {
-                Username = model.Username,
-                Login = model.Login,
-                Password = model.Password,
-                IdRole = (await _roleRepository.GetUserRole(model.Role)).Id
-            });
+                await _clientRepository.AddClient(new Client
+                {
+                    Username = model.Username,
+                    Login = model.Login,
+                    Password = model.Password,
+                    IdRole = (await _roleRepository.GetUserRole(model.Role)).Id
+                });
 
-            return Ok();
+                return Ok();
+            }
+            catch (RepositoryException ex)
+            {
+                return BadRequest(new {message = ex.Message});
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(new {message = "Выбрана не существующая роль."});
+            }
         }
 
         private async Task<ClaimsIdentity> GetIdentity(string login, string password)
