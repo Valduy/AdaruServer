@@ -16,7 +16,7 @@ using Task = Models.Task;
 namespace AdaruServer.Controllers
 {
     [Route("api/[controller]")]
-    public class TasksController : Controller
+    public class TaskController : Controller
     {
         private ITaskRepository _taskRepository;
         private IClientRepository _clientRepository;
@@ -24,7 +24,7 @@ namespace AdaruServer.Controllers
         private IStatusRepository _statusRepository;
         private IMapper _mapper;
 
-        public TasksController(
+        public TaskController(
             ITaskRepository taskRepository, 
             IClientRepository clientRepository,
             IRoleRepository roleRepository,
@@ -38,7 +38,7 @@ namespace AdaruServer.Controllers
             _mapper = mapper;
         }
 
-        // api/tasks/all
+        // api/task/all
         [HttpGet("all")]
         public async Task<List<TaskViewModel>> GetTasks()
         {
@@ -46,7 +46,7 @@ namespace AdaruServer.Controllers
             return await CreateTasksViewModelsAsync(tasks);
         }
 
-        // api/tasks/new
+        // api/task/new
         [HttpGet("new")]
         public async Task<List<TaskViewModel>> GetNewTasks()
         {
@@ -54,7 +54,7 @@ namespace AdaruServer.Controllers
             return await CreateTasksViewModelsAsync(tasks);
         }
 
-        // api/tasks/customer?id=1
+        // api/task/customer?id=1
         [HttpGet("customer")]
         public async Task<List<TaskViewModel>> GetCustomerTasks(int id)
         {
@@ -62,15 +62,24 @@ namespace AdaruServer.Controllers
             return await CreateTasksViewModelsAsync(tasks);
         }
 
-        // api/tasks/performer?id=1
+        // api/task/performer?id=1
         [HttpGet("performer")]
         public async Task<List<TaskViewModel>> GetPerformerTasks(int id)
         {
             var tasks = await _taskRepository.GetPerformerTasks(id);
             return await CreateTasksViewModelsAsync(tasks);
         }
-        
-        // api/tasks/add
+
+        // api/task/my?id=1
+        [Authorize]
+        [HttpGet("my")]
+        public async Task<List<TaskViewModel>> GetMyTasks()
+        {
+            var tasks = await _taskRepository.GetCustomerTasks(int.Parse(User.GetName()));
+            return await CreateTasksViewModelsAsync(tasks);
+        }
+
+        // api/task/add
         [Authorize]
         [HttpPost("add")]
         public async Task<IActionResult> AddTask([FromBody]AddTaskViewModel task)
@@ -108,7 +117,7 @@ namespace AdaruServer.Controllers
             return Ok();
         }
 
-        // api/tasks/status?id=1
+        // api/task/status?id=1
         [Authorize]
         [HttpPost("status")]
         public async Task<IActionResult> ChangeTaskStatus(int id, [FromBody]string status)
