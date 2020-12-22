@@ -7,6 +7,7 @@ namespace DBRepository.Interfaces
     public interface IStatusRepository
     {
         Task<TaskStatus> GetTaskStatus(int statusId);
+        Task<TaskStatus> GetTaskStatus(string status);
         Task<List<TaskStatus>> GetAllTaskStatuses();
     }
 }

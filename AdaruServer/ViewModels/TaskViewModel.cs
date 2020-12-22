@@ -9,10 +9,12 @@ namespace AdaruServer.ViewModels
 {
     public class TaskViewModel
     {
-        public Task Task { get; set; }
-        public ClientViewModel Customer { get; set; }
-        public ClientViewModel Performer { get; set; }
+        public int Id { get; set; }
+        public string Header { get; set; }
+        public string Content { get; set; }
         public string Status { get; set; }
-        public ICollection<Tag> Tags { get; set; }
+        public DateTime Time { get; set; }
+        public ClientViewModel Customer { get; set; }
+        public ICollection<string> Tags { get; set; }
     }
 }

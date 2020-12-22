@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AdaruServer.Helpers;
 using AdaruServer.ViewModels;
+using AutoMapper;
 using DBRepository;
 using DBRepository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -19,11 +20,16 @@ namespace AdaruServer.Controllers
     {
         private IClientRepository _clientRepository;
         private IRoleRepository _roleRepository;
+        private IMapper _mapper;
 
-        public ClientController(IClientRepository clientRepository, IRoleRepository roleRepository)
+        public ClientController(
+            IClientRepository clientRepository, 
+            IRoleRepository roleRepository, 
+            IMapper mapper)
         {
             _clientRepository = clientRepository;
             _roleRepository = roleRepository;
+            _mapper = mapper;
         }
 
         // api/authorization/token
@@ -50,7 +56,7 @@ namespace AdaruServer.Controllers
             var response = new
             {
                 access_token = encodedJwt,
-                username = identity.Name
+                login = identity.Name
             };
 
             return Ok(response);
@@ -61,21 +67,16 @@ namespace AdaruServer.Controllers
         {
             try
             {
-                await _clientRepository.AddClient(new Client
-                {
-                    Username = model.Username,
-                    Login = model.Login,
-                    Password = model.Password,
-                    IdRole = (await _roleRepository.GetUserRole(model.Role)).Id
-                });
-
+                var client = _mapper.Map<Client>(model);
+                client.IdRole = (await _roleRepository.GetUserRole(model.Role)).Id;
+                await _clientRepository.AddClient(client);
                 return Ok();
             }
             catch (RepositoryException ex)
             {
                 return BadRequest(new {message = ex.Message});
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
                 return BadRequest(new {message = "Выбрана не существующая роль."});
             }

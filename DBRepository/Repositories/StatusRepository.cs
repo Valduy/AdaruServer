@@ -22,6 +22,12 @@ namespace DBRepository.Repositories
             return context.TaskStatuses.FirstOrDefault(ts => ts.Id == statusId);
         }
 
+        public async Task<TaskStatus> GetTaskStatus(string status)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return context.TaskStatuses.FirstOrDefault(ts => ts.Status == status);
+        }
+
         public async Task<List<TaskStatus>> GetAllTaskStatuses()
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);

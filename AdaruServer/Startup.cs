@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AdaruServer.Extensions;
 using AdaruServer.Helpers;
+using AutoMapper;
 using DBRepository.Factories;
 using DBRepository.Interfaces;
 using DBRepository.Repositories;
@@ -48,6 +49,14 @@ namespace AdaruServer
                         ClockSkew = TimeSpan.Zero
                     };
                 });
+
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
+
+            var mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
 
             services.AddMvc(mvcOptions => mvcOptions.EnableEndpointRouting = false);
 

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AdaruServer.ViewModels;
+using AutoMapper;
 using DBRepository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using Task = Models.Task;
 
 namespace AdaruServer.Controllers
@@ -17,17 +20,20 @@ namespace AdaruServer.Controllers
         private IClientRepository _clientRepository;
         private IRoleRepository _roleRepository;
         private IStatusRepository _statusRepository;
+        private IMapper _mapper;
 
         public TasksController(
             ITaskRepository taskRepository, 
             IClientRepository clientRepository,
             IRoleRepository roleRepository,
-            IStatusRepository statusRepository)
+            IStatusRepository statusRepository,
+            IMapper mapper)
         {
             _taskRepository = taskRepository;
             _clientRepository = clientRepository;
             _roleRepository = roleRepository;
             _statusRepository = statusRepository;
+            _mapper = mapper;
         }
 
         // api/tasks/all
@@ -61,6 +67,20 @@ namespace AdaruServer.Controllers
             var tasks = await _taskRepository.GetPerformerTasks(id);
             return await CreateTasksViewModelsAsync(tasks);
         }
+        
+        // api/tasks/add?id=1
+        [Authorize]
+        [HttpPost("add")]
+        public async System.Threading.Tasks.Task AddTask(int id, [FromBody]AddTaskViewModel task)
+        {
+            var claimsIdentity = this.User.Identity as ClaimsIdentity;
+            var userId = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
+            var newTask = _mapper.Map<Models.Task>(task);
+            newTask.IdCustomer = id;
+            newTask.IdStatus = (await _statusRepository.GetTaskStatus("new")).Id;
+            newTask.Time = DateAndTime.Now;
+            await _taskRepository.AddTask(newTask);
+        }
 
         private async Task<List<TaskViewModel>> CreateTasksViewModelsAsync(List<Task> tasks)
         {
@@ -68,21 +88,13 @@ namespace AdaruServer.Controllers
 
             foreach (var t in tasks)
             {
-                var customer = await _clientRepository.GetClient(t.IdCustomer);
-
-                result.Add(new TaskViewModel
-                {
-                    Task = t,
-                    Tags = await _taskRepository.GetTaskTags(t.Id),
-                    Status = (await _statusRepository.GetTaskStatus(t.IdStatus)).Status,
-                    Customer = new ClientViewModel()
-                    {
-                        Id = customer.Id,
-                        Login = customer.Login,
-                        Role = (await _roleRepository.GetUserRole(customer.IdRole)).Role,
-                        Username = customer.Username
-                    }
-                });
+                var client = await _clientRepository.GetClient(t.IdCustomer);
+                var task = _mapper.Map<TaskViewModel>(t);
+                task.Tags = (await _taskRepository.GetTaskTags(t.Id)).Select(tag => tag.Name).ToList();
+                task.Status = (await _statusRepository.GetTaskStatus(t.IdStatus)).Status;
+                task.Customer = _mapper.Map<ClientViewModel>(client);
+                task.Customer.Role = (await _roleRepository.GetUserRole(client.IdRole)).Role;
+                result.Add(task);
             }
 
             return result;
