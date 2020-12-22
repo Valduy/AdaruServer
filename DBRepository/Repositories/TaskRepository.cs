@@ -6,7 +6,9 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using DBRepository.Extensions;
 using DBRepository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Models;
+using Npgsql;
 using Task = Models.Task;
 
 namespace DBRepository.Repositories
@@ -26,9 +28,25 @@ namespace DBRepository.Repositories
 
         public async System.Threading.Tasks.Task AddTask(Task task)
         {
-            await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            await context.AddAsync(task);
-            await context.SaveChangesAsync();
+            try
+            {
+                await using var context = ContextFactory.CreateDbContext(ConnectionString);
+                await context.AddAsync(task);
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException is PostgresException innerException)
+                {
+                    switch (innerException.SqlState)
+                    {
+                        case PgsqlErrors.RaiseException:
+                            throw new RepositoryException(innerException.MessageText);
+                    }
+                }
+
+                throw;
+            }
         }
 
         public async Task<List<Models.Task>> GetAllTasks()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AdaruServer.Extensions;
 using AdaruServer.ViewModels;
 using AutoMapper;
 using DBRepository;
@@ -69,24 +70,39 @@ namespace AdaruServer.Controllers
             return await CreateTasksViewModelsAsync(tasks);
         }
         
-        // api/tasks/add?id=1
+        // api/tasks/add
         [Authorize]
         [HttpPost("add")]
         public async Task<IActionResult> AddTask([FromBody]AddTaskViewModel task)
         {
             try
             {
-                var claimsIdentity = this.User.Identity as ClaimsIdentity;
-                var id = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
+                var userId = User.GetName();
                 var newTask = _mapper.Map<Models.Task>(task);
-                newTask.IdCustomer = int.Parse(id);
+                newTask.IdCustomer = int.Parse(userId);
                 newTask.IdStatus = (await _statusRepository.GetTaskStatus("new")).Id;
                 newTask.Time = DateAndTime.Now;
                 await _taskRepository.AddTask(newTask);
             }
             catch (RepositoryException ex)
             {
-                BadRequest(new {message = ex.Message});
+                return BadRequest(new {message = ex.Message});
+            }
+
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("add/tags")]
+        public async Task<IActionResult> AddTagsToTask(int id, [FromBody]IEnumerable<string> tags)
+        {
+            try
+            {
+                // TODO
+            }
+            catch (RepositoryException ex)
+            {
+                BadRequest(new { message = ex.Message });
             }
 
             return Ok();
