@@ -9,24 +9,27 @@ using AdaruServer.ViewModels;
 using DBRepository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Models;
 
 namespace AdaruServer.Controllers
 {
     [Route("api/[controller]")]
-    public class AuthorizationController : Controller
+    public class ClientController : Controller
     {
         private IClientRepository _clientRepository;
+        private IRoleRepository _roleRepository;
 
-        public AuthorizationController(IClientRepository clientRepository)
+        public ClientController(IClientRepository clientRepository, IRoleRepository roleRepository)
         {
             _clientRepository = clientRepository;
+            _roleRepository = roleRepository;
         }
 
-        // api/authorization/test
+        // api/authorization/token
         [HttpPost("token")]
         public async Task<IActionResult> Token([FromBody] AuthorizationViewModel model)
         {
-            var identity = await GetIdentity(model.Username, model.Password);
+            var identity = await GetIdentity(model.Login, model.Password);
 
             if (identity == null)
             {
@@ -42,7 +45,7 @@ namespace AdaruServer.Controllers
                 expires: now.Add(TimeSpan.FromMinutes(AuthorizationOptions.LIFETIME)),
                 signingCredentials: new SigningCredentials(AuthorizationOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-            
+
             var response = new
             {
                 access_token = encodedJwt,
@@ -52,11 +55,25 @@ namespace AdaruServer.Controllers
             return Ok(response);
         }
 
-        private async Task<ClaimsIdentity> GetIdentity(string userName, string password)
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody]RegistrationViewModel model)
+        {
+            await _clientRepository.AddClient(new Client
+            {
+                Username = model.Username,
+                Login = model.Login,
+                Password = model.Password,
+                IdRole = (await _roleRepository.GetUserRole(model.Role)).Id
+            });
+
+            return Ok();
+        }
+
+        private async Task<ClaimsIdentity> GetIdentity(string login, string password)
         {
             ClaimsIdentity identity = null;
 
-            var client = await _clientRepository.GetClient(userName);
+            var client = await _clientRepository.GetClient(login);
 
             if (client != null)
             {
@@ -67,7 +84,7 @@ namespace AdaruServer.Controllers
                     {
                         new Claim(ClaimsIdentity.DefaultNameClaimType, client.Login)
                     };
-                    identity = new ClaimsIdentity(claims, "Token", 
+                    identity = new ClaimsIdentity(claims, "Token",
                         ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
                 }
             }

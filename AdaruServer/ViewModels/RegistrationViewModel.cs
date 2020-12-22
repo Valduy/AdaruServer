@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 
 namespace AdaruServer.ViewModels
 {
-    public class AuthorizationViewModel
+    public class RegistrationViewModel
     {
         public string Login { get; set; }
         public string Password { get; set; }
+        public string Username { get; set; }
+        public string Role { get; set; }
     }
 }

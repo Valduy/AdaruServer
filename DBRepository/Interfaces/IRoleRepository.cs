@@ -9,6 +9,7 @@ namespace DBRepository.Interfaces
     public interface IRoleRepository
     {
         Task<UserRole> GetUserRole(int roleId);
+        Task<UserRole> GetUserRole(string role);
         Task<List<UserRole>> GetAllUserRoles();
     }
 }

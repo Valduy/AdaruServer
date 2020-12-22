@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using AdaruServer.Extensions;
 using AdaruServer.Helpers;
 using DBRepository.Factories;
 using DBRepository.Interfaces;
@@ -95,6 +96,8 @@ namespace AdaruServer
                 app.UseDeveloperExceptionPage();
             }
 
+            app.ConfigureExceptionHandler();
+            app.UseAuthentication();
             app.UseStaticFiles();
             app.UseMvc();
             //app.UseMvc(routes =>

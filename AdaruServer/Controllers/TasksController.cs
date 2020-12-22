@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AdaruServer.ViewModels;
 using DBRepository.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Task = Models.Task;
 

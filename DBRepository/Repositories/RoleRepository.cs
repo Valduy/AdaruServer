@@ -22,6 +22,12 @@ namespace DBRepository.Repositories
             return context.UserRoles.FirstOrDefault(ur => ur.Id == roleId);
         }
 
+        public async Task<UserRole> GetUserRole(string role)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return context.UserRoles.FirstOrDefault(ur => ur.Role == role);
+        }
+
         public async Task<List<UserRole>> GetAllUserRoles()
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
