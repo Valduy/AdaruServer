@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AdaruServer.ViewModels;
 using AutoMapper;
+using DBRepository;
 using DBRepository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -71,15 +72,24 @@ namespace AdaruServer.Controllers
         // api/tasks/add?id=1
         [Authorize]
         [HttpPost("add")]
-        public async System.Threading.Tasks.Task AddTask(int id, [FromBody]AddTaskViewModel task)
+        public async Task<IActionResult> AddTask([FromBody]AddTaskViewModel task)
         {
-            var claimsIdentity = this.User.Identity as ClaimsIdentity;
-            var userId = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
-            var newTask = _mapper.Map<Models.Task>(task);
-            newTask.IdCustomer = id;
-            newTask.IdStatus = (await _statusRepository.GetTaskStatus("new")).Id;
-            newTask.Time = DateAndTime.Now;
-            await _taskRepository.AddTask(newTask);
+            try
+            {
+                var claimsIdentity = this.User.Identity as ClaimsIdentity;
+                var id = claimsIdentity.FindFirst(ClaimTypes.Name)?.Value;
+                var newTask = _mapper.Map<Models.Task>(task);
+                newTask.IdCustomer = int.Parse(id);
+                newTask.IdStatus = (await _statusRepository.GetTaskStatus("new")).Id;
+                newTask.Time = DateAndTime.Now;
+                await _taskRepository.AddTask(newTask);
+            }
+            catch (RepositoryException ex)
+            {
+                BadRequest(new {message = ex.Message});
+            }
+
+            return Ok();
         }
 
         private async Task<List<TaskViewModel>> CreateTasksViewModelsAsync(List<Task> tasks)

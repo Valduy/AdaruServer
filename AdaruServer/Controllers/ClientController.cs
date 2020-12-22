@@ -56,7 +56,7 @@ namespace AdaruServer.Controllers
             var response = new
             {
                 access_token = encodedJwt,
-                login = identity.Name
+                id = identity.Name
             };
 
             return Ok(response);
@@ -95,7 +95,7 @@ namespace AdaruServer.Controllers
                 {
                     var claims = new List<Claim>
                     {
-                        new Claim(ClaimsIdentity.DefaultNameClaimType, client.Login)
+                        new Claim(ClaimsIdentity.DefaultNameClaimType, client.Id.ToString())
                     };
                     identity = new ClaimsIdentity(claims, "Token",
                         ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
