@@ -4,11 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using AdaruServer.Extensions;
 using AdaruServer.ViewModels;
+using DBRepository;
 using DBRepository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using Models;
 using IMapper = AutoMapper.IMapper;
+using Task = System.Threading.Tasks.Task;
 
 namespace AdaruServer.Controllers
 {
@@ -68,6 +71,26 @@ namespace AdaruServer.Controllers
         {
             var reviews = await _reviewRepository.GetReviewsAboutClient(int.Parse(User.GetName()));
             return await CreateReviewViewModels(reviews);
+        }
+
+        [Authorize]
+        [HttpPost("reviews/add")]
+        public async Task<IActionResult> AddReview([FromBody]AddReviewViewModel model)
+        {
+            try
+            {
+                var userId = User.GetName();
+                var newReview = _mapper.Map<Review>(model);
+                newReview.IdSource = int.Parse(userId);
+                newReview.Time = DateAndTime.Now;
+                await _reviewRepository.AddReview(newReview);
+            }
+            catch (RepositoryException ex)
+            {
+                return BadRequest(new {message = ex.Message});
+            }
+
+            return Ok();
         }
 
         private async Task<List<ReviewViewModel>> CreateReviewViewModels(List<Review> reviews)

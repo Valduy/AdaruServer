@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using DBRepository.Extensions;
 using DBRepository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Models;
+using Npgsql;
 using Task = System.Threading.Tasks.Task;
 
 namespace DBRepository.Repositories
@@ -24,9 +26,27 @@ namespace DBRepository.Repositories
 
         public async Task AddReview(Review review)
         {
-            await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            await context.Reviews.AddAsync(review);
-            await context.SaveChangesAsync();
+            try
+            {
+                await using var context = ContextFactory.CreateDbContext(ConnectionString);
+                await context.Reviews.AddAsync(review);
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException is PostgresException innerException)
+                {
+                    switch (innerException.SqlState)
+                    {
+                        case PgsqlErrors.RaiseException:
+                            throw new RepositoryException(innerException.MessageText);
+                        case PgsqlErrors.UniqueViolation:
+                            throw new RepositoryException("Отзыв об этом пользователе уже оставлен.");
+                    }
+                }
+
+                throw;
+            }
         }
 
         public async Task<List<Review>> GetReviewsAboutClient(int clientId)
