@@ -48,13 +48,20 @@ namespace AdaruServer.Controllers
             return Ok();
         }
 
-        // api/profile/get
+        // api/profile/my
         [Authorize]
-        [HttpGet("get")]
+        [HttpGet("my")]
         public async Task<ProfileViewModel> GetProfile()
         {
-            var userId = User.GetName();
-            var profile = await _profileRepository.GetProfile(int.Parse(userId));
+            var profile = await _profileRepository.GetProfile(int.Parse(User.GetName()));
+            return _mapper.Map<ProfileViewModel>(profile);
+        }
+
+        // api/profile/concrete?id=1
+        [HttpGet("concrete")]
+        public async Task<ProfileViewModel> GetProfile(int id)
+        {
+            var profile = await _profileRepository.GetProfile(id);
             return _mapper.Map<ProfileViewModel>(profile);
         }
 
