@@ -158,6 +158,10 @@ namespace DBRepository
                     .HasColumnName("login")
                     .IsFixedLength(true);
 
+                entity.Property(e => e.Path)
+                    .HasMaxLength(200)
+                    .HasColumnName("path");
+
                 entity.Property(e => e.Raiting).HasColumnName("raiting");
 
                 entity.Property(e => e.Resume)
@@ -451,7 +455,7 @@ namespace DBRepository
                     .HasMaxLength(100)
                     .HasColumnName("header");
 
-                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.IdClient).HasColumnName("id_client");
 
                 entity.Property(e => e.Login)
                     .HasMaxLength(20)
@@ -465,6 +469,10 @@ namespace DBRepository
                 entity.Property(e => e.Username)
                     .HasMaxLength(50)
                     .HasColumnName("username");
+
+                entity.Property(e => e.IdTask).HasColumnName("id_task");
+
+                entity.Property(e => e.Time).HasColumnName("time");
             });
 
             modelBuilder.Entity<TaskStatus>(entity =>

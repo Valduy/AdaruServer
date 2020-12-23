@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core.EntityClient;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -9,6 +12,7 @@ using DBRepository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Npgsql;
+using DbUpdateException = Microsoft.EntityFrameworkCore.DbUpdateException;
 using Task = Models.Task;
 
 namespace DBRepository.Repositories
@@ -89,15 +93,34 @@ namespace DBRepository.Repositories
                 .Select(tt => tt.IdTag).Contains(t.Id)).ToListAsyncSafe();
         }
 
-        public async System.Threading.Tasks.Task ChangeTaskStatus(int taskId, string status)
+        public async System.Threading.Tasks.Task UpdateTask(Task task)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            var task = context.Tasks.FirstOrDefault(t => t.Id == taskId) 
+            var entry = context.Tasks.FirstOrDefault(t => t.Id == task.Id) 
                        ?? throw new RepositoryException("Такой задачи не существует.");
-            var temp = context.TaskStatuses.FirstOrDefault(ts => ts.Status == status)
-                       ?? throw new RepositoryException("Нет такого статуса.");
-            task.IdStatus =  temp.Id;
+            context.Entry(entry).CurrentValues.SetValues(task);
             await context.SaveChangesAsync();
+        }
+
+        public async System.Threading.Tasks.Task AddTagsToTask(Task task, IEnumerable<string> tags)
+        {
+            try
+            {
+                await using var connection = new NpgsqlConnection(connectionString: ConnectionString);
+                connection.Open();
+                await using var command = connection.CreateCommand();
+                var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
+                command.CommandText = $"call add_tags_to_task({task.Id}, {string.Join(',', parameters)})";
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (PostgresException ex)
+            {
+                switch (ex.SqlState)
+                {
+                    case PgsqlErrors.RaiseException:
+                        throw new RepositoryException(ex.MessageText);
+                }
+            }
         }
     }
 }

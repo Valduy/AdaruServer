@@ -107,11 +107,18 @@ namespace AdaruServer.Controllers
         {
             try
             {
-                // TODO
+                var task = await _taskRepository.GetTask(id);
+
+                if (task.IdCustomer != int.Parse(User.GetName()))
+                {
+                    return BadRequest(new { message = "Попытка изменить не свою задачу" });
+                }
+
+                await _taskRepository.AddTagsToTask(task, tags);
             }
             catch (RepositoryException ex)
             {
-                BadRequest(new { message = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
 
             return Ok();
@@ -136,11 +143,16 @@ namespace AdaruServer.Controllers
 
             try
             {
-                await _taskRepository.ChangeTaskStatus(id, status);
+                task.IdStatus = (await _statusRepository.GetTaskStatus("status")).Id;
+                await _taskRepository.UpdateTask(task);
             }
             catch (RepositoryException ex)
             {
                 return BadRequest(new {message = ex.Message});
+            }
+            catch (NullReferenceException)
+            {
+                return BadRequest(new { message = "Такого статуса задачи не существует." });
             }
 
             return Ok();
