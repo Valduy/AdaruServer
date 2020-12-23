@@ -40,7 +40,7 @@ namespace AdaruServer.Controllers
 
             if (identity == null)
             {
-                return Unauthorized(new { message = "Мимо! Но ты не сдавайся! Однажды у тебя точно получится!" });
+                return Unauthorized();
             }
 
             var now = DateTime.UtcNow;
@@ -59,7 +59,7 @@ namespace AdaruServer.Controllers
                 id = identity.Name
             };
 
-            return Ok(new {message="Ура! Вы угадали пароль!"});
+            return Ok(response);
         }
 
         // api/client/register

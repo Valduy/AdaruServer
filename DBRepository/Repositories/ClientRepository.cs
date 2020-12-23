@@ -49,41 +49,19 @@ namespace DBRepository.Repositories
             var command = connection.CreateCommand();
             var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
             command.CommandText = $"select * from get_performers_by_tags({string.Join(',', parameters)})";
-
-            try
+            await connection.OpenAsync();
+            var reader = await command.ExecuteReaderAsync();
+            return reader.Select(r => new PerformerInfo()
             {
-                await connection.OpenAsync();
-                var reader = await command.ExecuteReaderAsync();
-                var dataTable = new DataTable();
-                dataTable.Load(reader);
-                var result = reader.Select<PerformerInfo>(r => new PerformerInfo()
-                {
-                    Id = (int) r["id"],
-                    Login = r["login"].ToString(),
-                    Username = r["username"].ToString(),
-                    Role = r["role"].ToString(),
-                    Path = r["path"] is DBNull ? null : r["path"].ToString(),
-                    Resume = r["resume"] is DBNull ? null : r["resume"].ToString(),
-                    Raiting = r["raiting"] is DBNull ? 0 : (short)r["raiting"],
-                    Expirience = r["expirience"] is DBNull ? 0 : (long)r["expirience"],
-                });
-
-                return result.ToList();
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            //catch (PostgresException ex)
-            //{
-            //    switch (ex.SqlState)
-            //    {
-            //        case PgsqlErrors.RaiseException:
-            //            throw new RepositoryException(ex.MessageText);
-            //    }
-
-            //    throw;
-            //}
+                Id = (int)r[0],
+                Login = r[1].ToString(),
+                Username = r[2].ToString(),
+                Role = r[3].ToString(),
+                Path = r[4] is DBNull ? null : r[4].ToString(),
+                Resume = r[5] is DBNull ? null : r[5].ToString(),
+                Raiting = r[6] is DBNull ? 0 : (decimal)r[6],
+                Expirience = r[7] is DBNull ? 0 : (long)r[7],
+            }).ToList();
         }
 
         public async Task<List<CustomerInfo>> GetCustomers()
