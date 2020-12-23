@@ -85,28 +85,18 @@ namespace AdaruServer.Controllers
 
         // api/client/performers
         [HttpGet("performers")]
-        public async Task<List<ClientViewModel>> GetPerformers()
+        public async Task<List<ClientInfoViewModel>> GetPerformers()
         {
             var performers = await _clientRepository.GetPerformers();
-            return performers.Select(p =>
-            {
-                var model = _mapper.Map<ClientViewModel>(p);
-                model.Role = "performer";
-                return model;
-            }).ToList();
+            return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
         }
 
         // api/client/customers
         [HttpGet("customers")]
-        public async Task<List<ClientViewModel>> GetCustomers()
+        public async Task<List<ClientInfoViewModel>> GetCustomers()
         {
             var performers = await _clientRepository.GetCustomers();
-            return performers.Select(p =>
-            {
-                var model = _mapper.Map<ClientViewModel>(p);
-                model.Role = "customer";
-                return model;
-            }).ToList();
+            return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
         }
 
         private async Task<ClaimsIdentity> GetIdentity(string login, string password)

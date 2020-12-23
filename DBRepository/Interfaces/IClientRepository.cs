@@ -9,8 +9,8 @@ namespace DBRepository.Interfaces
     {
         Task<Client> GetClient(int clientId);
         Task<Client> GetClient(string login);
-        Task<List<Client>> GetPerformers();
-        Task<List<Client>> GetCustomers();
+        Task<List<PerformerInfo>> GetPerformers();
+        Task<List<CustomerInfo>> GetCustomers();
         Task AddClient(Client client);
     }
 }

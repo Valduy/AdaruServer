@@ -31,9 +31,17 @@ namespace DBRepository.Repositories
             return context.Clients.FirstOrDefault(c => c.Login == login);
         }
 
-        public async Task<List<Client>> GetPerformers() => await GetClients("performer");
+        public async Task<List<PerformerInfo>> GetPerformers()
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return await context.PerformerInfos.ToListAsyncSafe();
+        }
 
-        public async Task<List<Client>> GetCustomers() => await GetClients("customer");
+        public async Task<List<CustomerInfo>> GetCustomers()
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return await context.CustomerInfos.ToListAsyncSafe();
+        }
 
         public async Task AddClient(Client client)
         {
@@ -56,14 +64,6 @@ namespace DBRepository.Repositories
 
                 throw;
             }
-        }
-
-        private async Task<List<Client>> GetClients(string role)
-        {
-            await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Clients
-                .Where(c => c.IdRole == context.UserRoles.First(r => r.Role == role).Id)
-                .ToListAsyncSafe();
         }
     }
 }
