@@ -105,6 +105,14 @@ namespace AdaruServer.Controllers
             return await CreatePerformerViewModelsAsync(performers);
         }
 
+        // api/client/performer/concrete
+        [HttpGet("performer/concrete")]
+        public async Task<PerformerInfoViewModel> GetPerformer(int id)
+        {
+            var performer = await _performerRepository.GetPerformer(id);
+            return await CreatePerformerInfoViewModelAsync(performer);
+        }
+
         // api/client/customers
         [HttpGet("customers")]
         public async Task<List<ClientInfoViewModel>> GetCustomers()
@@ -158,12 +166,17 @@ namespace AdaruServer.Controllers
 
             foreach (var p in performers)
             {
-                var model = _mapper.Map<PerformerInfoViewModel>(p);
-                model.Tags = (await _performerRepository.GetPerformerTags(model.Id.Value)).Select(t => t.Name);
-                result.Add(model);
+                 result.Add(await CreatePerformerInfoViewModelAsync(p));
             }
 
             return result;
+        }
+
+        private async Task<PerformerInfoViewModel> CreatePerformerInfoViewModelAsync(PerformerInfo performer)
+        {
+            var model = _mapper.Map<PerformerInfoViewModel>(performer);
+            model.Tags = (await _performerRepository.GetPerformerTags(model.Id.Value)).Select(t => t.Name);
+            return model;
         }
     }
 }
