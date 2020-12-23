@@ -75,8 +75,25 @@ namespace AdaruServer.Controllers
         [HttpGet("my")]
         public async Task<List<TaskViewModel>> GetMyTasks()
         {
-            var tasks = await _taskRepository.GetCustomerTasks(int.Parse(User.GetName()));
-            return await CreateTasksViewModelsAsync(tasks);
+            var id = int.Parse(User.GetName());
+            var user = await _clientRepository.GetClient(id);
+            var role = await _roleRepository.GetUserRole(user.IdRole);
+
+            switch (role.Role)
+            {
+                case "performer":
+                {
+                    var tasks = await _taskRepository.GetPerformerTasks(id);
+                    return await CreateTasksViewModelsAsync(tasks);
+                }
+                case "customer":
+                {
+                    var tasks = await _taskRepository.GetCustomerTasks(id);
+                    return await CreateTasksViewModelsAsync(tasks);
+                }   
+                default:
+                    throw new ArgumentException();
+            }
         }
 
         // api/task/add
