@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -58,7 +59,9 @@ namespace AdaruServer
             var mapper = mapperConfig.CreateMapper();
             services.AddSingleton(mapper);
 
-            services.AddMvc(mvcOptions => mvcOptions.EnableEndpointRouting = false);
+            services.AddCors();
+            services.AddMvc(mvcOptions => mvcOptions.EnableEndpointRouting = false)
+                .SetCompatibilityVersion(CompatibilityVersion.Latest);
 
             services.AddScoped<IRepositoryContextFactory, AdaruDBContextFactory>();
 
@@ -111,13 +114,13 @@ namespace AdaruServer
             app.ConfigureExceptionHandler();
             app.UseAuthentication();
             app.UseStaticFiles();
+
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
             app.UseMvc();
-            //app.UseMvc(routes =>
-            //{
-            //    routes.MapRoute(
-            //        name: "DefaultApi",
-            //        template: "api/{controller}/{action}/{id?}");
-            //});
         }
     }
 }
