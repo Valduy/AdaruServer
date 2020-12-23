@@ -5,11 +5,8 @@ using System.Threading.Tasks;
 
 namespace AdaruServer.ViewModels
 {
-    public class MessageViewModel
+    public class AddMessageViewModel
     {
-        public int Id { get; set; }
-        public int IdSender { get; set; }
         public string Content { get; set; }
-        public DateTime Time { get; set; }
     }
 }

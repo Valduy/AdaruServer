@@ -90,7 +90,7 @@ namespace AdaruServer.Controllers
                 var newTask = _mapper.Map<Models.Task>(task);
                 newTask.IdCustomer = int.Parse(userId);
                 newTask.IdStatus = (await _statusRepository.GetTaskStatus("new")).Id;
-                newTask.Time = DateAndTime.Now;
+                newTask.Time = DateTime.Now;
                 await _taskRepository.AddTask(newTask);
             }
             catch (RepositoryException ex)

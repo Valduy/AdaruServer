@@ -20,6 +20,7 @@ namespace AdaruServer.Helpers
             CreateMap<Review, ReviewViewModel>();
             CreateMap<AddReviewViewModel, Review>();
             CreateMap<Message, MessageViewModel>();
+            CreateMap<AddMessageViewModel, Message>();
             CreateMap<Chat, ChatViewModel>();
             CreateMap<string, Tag>()
                 .ForMember(m => m.Name, opt => opt.MapFrom(m => m));

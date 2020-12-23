@@ -82,7 +82,7 @@ namespace AdaruServer.Controllers
                 var userId = User.GetName();
                 var newReview = _mapper.Map<Review>(model);
                 newReview.IdSource = int.Parse(userId);
-                newReview.Time = DateAndTime.Now;
+                newReview.Time = DateTime.Now;
                 await _reviewRepository.AddReview(newReview);
             }
             catch (RepositoryException ex)

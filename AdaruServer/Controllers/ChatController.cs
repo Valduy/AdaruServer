@@ -8,6 +8,8 @@ using AutoMapper;
 using DBRepository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Models;
+using Task = System.Threading.Tasks.Task;
 
 namespace AdaruServer.Controllers
 {
@@ -64,15 +66,27 @@ namespace AdaruServer.Controllers
 
         // api/chat/add
         [Authorize]
-        [HttpGet("add")]
-        public async Task AddMessage([FromBody]MessageViewModel model)
+        [HttpPost("add")]
+        public async Task AddMessage(int id, [FromBody]AddMessageViewModel model)
         {
-            var userId = User.GetName();
-            var chat = await _chatRepository.GetChat(model.Id);
+            var userId = int.Parse(User.GetName());
+            var chat = await _chatRepository.GetChat(userId, id);
+            var message = _mapper.Map<Message>(model);
+
             if (chat == null)
             {
-                //TODO: проверить, чтоб нельзя было в другой чат написать (не свой)
+                chat = new Chat
+                {
+                    IdSource = userId,
+                    IdTarget = id
+                };
+                await _chatRepository.AddChat(chat);
             }
+
+            message.IdSender = userId;
+            message.IdChat = chat.Id;
+            message.Time = DateTime.Now;
+            await _messageRepository.AddMessage(message);
         }
     }
 }
