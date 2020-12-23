@@ -40,7 +40,7 @@ namespace AdaruServer.Controllers
 
             if (identity == null)
             {
-                return Unauthorized();
+                return Unauthorized(new { message = "Мимо! Но ты не сдавайся! Однажды у тебя точно получится!" });
             }
 
             var now = DateTime.UtcNow;
@@ -59,7 +59,7 @@ namespace AdaruServer.Controllers
                 id = identity.Name
             };
 
-            return Ok(response);
+            return Ok(new {message="Ура! Вы угадали пароль!"});
         }
 
         // api/client/register
@@ -88,6 +88,14 @@ namespace AdaruServer.Controllers
         public async Task<List<ClientInfoViewModel>> GetPerformers()
         {
             var performers = await _clientRepository.GetPerformers();
+            return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
+        }
+
+        // api/client/performers/tags
+        [HttpPost("performers/tags")]
+        public async Task<List<ClientInfoViewModel>> GetCustomers([FromBody]IEnumerable<string> tags)
+        {
+            var performers = await _clientRepository.GetPerformers(tags);
             return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
         }
 

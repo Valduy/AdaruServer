@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
 using DBRepository.Extensions;
+using DBRepository.Helpers;
 using DBRepository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -41,42 +44,46 @@ namespace DBRepository.Repositories
 
         public async Task<List<PerformerInfo>> GetPerformers(IEnumerable<string> tags)
         {
-            //await using var connection = new NpgsqlConnection(connectionString: ConnectionString);
-            //connection.Open();
-            //await using var command = connection.CreateCommand();
-            //var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
-            //command.CommandText = $"call get_performers_by_tags({string.Join(',', parameters)})";
-            //var reader = command.ExecuteReader();
-            //var result = ((IObjectContextAdapter)context)
-
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             var connection = context.Database.GetDbConnection();
             var command = connection.CreateCommand();
             var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
-            command.CommandText = $"call get_performers_by_tags({string.Join(',', parameters)})";
+            command.CommandText = $"select * from get_performers_by_tags({string.Join(',', parameters)})";
 
             try
             {
                 await connection.OpenAsync();
-                await command.ExecuteNonQueryAsync();
-
                 var reader = await command.ExecuteReaderAsync();
-                var result = ((IObjectContextAdapter) context)
-                    .ObjectContext
-                    .Translate<PerformerInfo>(reader);
+                var dataTable = new DataTable();
+                dataTable.Load(reader);
+                var result = reader.Select<PerformerInfo>(r => new PerformerInfo()
+                {
+                    Id = (int) r["id"],
+                    Login = r["login"].ToString(),
+                    Username = r["username"].ToString(),
+                    Role = r["role"].ToString(),
+                    Path = r["path"] is DBNull ? null : r["path"].ToString(),
+                    Resume = r["resume"] is DBNull ? null : r["resume"].ToString(),
+                    Raiting = r["raiting"] is DBNull ? 0 : (short)r["raiting"],
+                    Expirience = r["expirience"] is DBNull ? 0 : (long)r["expirience"],
+                });
 
                 return result.ToList();
             }
-            catch (PostgresException ex)
+            catch (Exception ex)
             {
-                switch (ex.SqlState)
-                {
-                    case PgsqlErrors.RaiseException:
-                        throw new RepositoryException(ex.MessageText);
-                }
+                throw;
             }
+            //catch (PostgresException ex)
+            //{
+            //    switch (ex.SqlState)
+            //    {
+            //        case PgsqlErrors.RaiseException:
+            //            throw new RepositoryException(ex.MessageText);
+            //    }
 
-            throw new NotImplementedException();
+            //    throw;
+            //}
         }
 
         public async Task<List<CustomerInfo>> GetCustomers()
