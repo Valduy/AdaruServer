@@ -175,7 +175,7 @@ namespace AdaruServer.Controllers
         private async Task<PerformerInfoViewModel> CreatePerformerInfoViewModelAsync(PerformerInfo performer)
         {
             var model = _mapper.Map<PerformerInfoViewModel>(performer);
-            model.Tags = (await _performerRepository.GetPerformerTags(model.Id.Value)).Select(t => t.Name);
+            model.Tags = (await _performerRepository.GetPerformerTags(model.Id)).Select(t => t.Name);
             return model;
         }
     }

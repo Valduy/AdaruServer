@@ -96,6 +96,28 @@ namespace AdaruServer.Controllers
             }
         }
 
+        // api/task/concrete?id=1
+        [HttpGet("concrete")]
+        public async Task<TaskInfoViewModel> GetTask(int id)
+        {
+            var task = await _taskRepository.GetTask(id);
+            var customer = await _clientRepository.GetClient(task.IdCustomer);
+            var model = _mapper.Map<TaskInfoViewModel>(task);
+            model.Tags = (await _taskRepository.GetTaskTags(task.Id)).Select(tag => tag.Name).ToList();
+            model.Status = (await _statusRepository.GetTaskStatus(task.IdStatus)).Status;
+            model.Customer = _mapper.Map<ClientViewModel>(customer);
+            model.Customer.Role = (await _roleRepository.GetUserRole(customer.IdRole)).Role;
+
+            if (task.IdPerformer.HasValue)
+            {
+                var performer = await _clientRepository.GetClient(task.IdPerformer.Value);
+                model.Performer = _mapper.Map<ClientViewModel>(performer);
+                model.Performer.Role = (await _roleRepository.GetUserRole(performer.IdRole)).Role;
+            }
+
+            return model;
+        }
+
         // api/task/add
         [Authorize]
         [HttpPost("add")]
