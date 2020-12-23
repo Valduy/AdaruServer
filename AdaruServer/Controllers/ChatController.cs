@@ -56,6 +56,7 @@ namespace AdaruServer.Controllers
         public async Task<ChatViewModel> GetChat(int id)
         {
             var chat = await _chatRepository.GetChat(int.Parse(User.GetName()), id);
+            if (chat == null) return null;
             var result = _mapper.Map<ChatViewModel>(chat);
             var client = await _clientRepository.GetClient(chat.IdTarget);
             result.Target = _mapper.Map<ClientViewModel>(client);
