@@ -101,6 +101,7 @@ namespace AdaruServer.Controllers
             return Ok();
         }
 
+        // api/task/tags?id=1
         [Authorize]
         [HttpPost("add/tags")]
         public async Task<IActionResult> AddTagsToTask(int id, [FromBody]IEnumerable<string> tags)
@@ -111,7 +112,7 @@ namespace AdaruServer.Controllers
 
                 if (task.IdCustomer != int.Parse(User.GetName()))
                 {
-                    return BadRequest(new { message = "Попытка изменить не свою задачу" });
+                    return BadRequest(new { message = "Попытка изменить не свою задачу." });
                 }
 
                 await _taskRepository.AddTagsToTask(task, tags);

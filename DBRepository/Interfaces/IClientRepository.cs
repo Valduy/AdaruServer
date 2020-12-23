@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Models;
 using Task = System.Threading.Tasks.Task;
 
@@ -8,6 +9,8 @@ namespace DBRepository.Interfaces
     {
         Task<Client> GetClient(int clientId);
         Task<Client> GetClient(string login);
+        Task<List<Client>> GetPerformers();
+        Task<List<Client>> GetCustomers();
         Task AddClient(Client client);
     }
 }

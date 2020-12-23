@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using DBRepository.Extensions;
 using DBRepository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -29,6 +31,10 @@ namespace DBRepository.Repositories
             return context.Clients.FirstOrDefault(c => c.Login == login);
         }
 
+        public async Task<List<Client>> GetPerformers() => await GetClients("performer");
+
+        public async Task<List<Client>> GetCustomers() => await GetClients("customer");
+
         public async Task AddClient(Client client)
         {
             try
@@ -50,6 +56,14 @@ namespace DBRepository.Repositories
 
                 throw;
             }
+        }
+
+        private async Task<List<Client>> GetClients(string role)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return await context.Clients
+                .Where(c => c.IdRole == context.UserRoles.First(r => r.Role == role).Id)
+                .ToListAsyncSafe();
         }
     }
 }

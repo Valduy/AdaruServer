@@ -32,7 +32,7 @@ namespace AdaruServer.Controllers
             _mapper = mapper;
         }
 
-        // api/authorization/token
+        // api/client/token
         [HttpPost("token")]
         public async Task<IActionResult> Token([FromBody] AuthorizationViewModel model)
         {
@@ -62,6 +62,7 @@ namespace AdaruServer.Controllers
             return Ok(response);
         }
 
+        // api/client/register
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody]RegistrationViewModel model)
         {
@@ -80,6 +81,32 @@ namespace AdaruServer.Controllers
             {
                 return BadRequest(new {message = "Выбрана не существующая роль."});
             }
+        }
+
+        // api/client/performers
+        [HttpGet("performers")]
+        public async Task<List<ClientViewModel>> GetPerformers()
+        {
+            var performers = await _clientRepository.GetPerformers();
+            return performers.Select(p =>
+            {
+                var model = _mapper.Map<ClientViewModel>(p);
+                model.Role = "performer";
+                return model;
+            }).ToList();
+        }
+
+        // api/client/customers
+        [HttpGet("customers")]
+        public async Task<List<ClientViewModel>> GetCustomers()
+        {
+            var performers = await _clientRepository.GetCustomers();
+            return performers.Select(p =>
+            {
+                var model = _mapper.Map<ClientViewModel>(p);
+                model.Role = "customer";
+                return model;
+            }).ToList();
         }
 
         private async Task<ClaimsIdentity> GetIdentity(string login, string password)
