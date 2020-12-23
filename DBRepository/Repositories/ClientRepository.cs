@@ -70,9 +70,26 @@ namespace DBRepository.Repositories
             return await context.CustomerInfos.ToListAsyncSafe();
         }
 
-        public Task<List<CustomerInfo>> GetCustomers(IEnumerable<string> tags)
+        public async Task<List<CustomerInfo>> GetCustomers(IEnumerable<string> tags)
         {
-            throw new NotImplementedException();
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var connection = context.Database.GetDbConnection();
+            var command = connection.CreateCommand();
+            var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
+            command.CommandText = $"select * from get_customers_by_tags({string.Join(',', parameters)})";
+            await connection.OpenAsync();
+            var reader = await command.ExecuteReaderAsync();
+            return reader.Select(r => new CustomerInfo()
+            {
+                Id = (int)r[0],
+                Login = r[1].ToString(),
+                Username = r[2].ToString(),
+                Role = r[3].ToString(),
+                Path = r[4] is DBNull ? null : r[4].ToString(),
+                Resume = r[5] is DBNull ? null : r[5].ToString(),
+                Raiting = r[6] is DBNull ? 0 : (decimal)r[6],
+                Expirience = r[7] is DBNull ? 0 : (long)r[7],
+            }).ToList();
         }
 
         public async Task AddClient(Client client)

@@ -93,7 +93,7 @@ namespace AdaruServer.Controllers
 
         // api/client/performers/tags
         [HttpPost("performers/tags")]
-        public async Task<List<ClientInfoViewModel>> GetCustomers([FromBody]IEnumerable<string> tags)
+        public async Task<List<ClientInfoViewModel>> GetPerformers([FromBody]IEnumerable<string> tags)
         {
             var performers = await _clientRepository.GetPerformers(tags);
             return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
@@ -102,6 +102,14 @@ namespace AdaruServer.Controllers
         // api/client/customers
         [HttpGet("customers")]
         public async Task<List<ClientInfoViewModel>> GetCustomers()
+        {
+            var performers = await _clientRepository.GetCustomers();
+            return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
+        }
+
+        // api/client/customers/tags
+        [HttpPost("customers/tags")]
+        public async Task<List<ClientInfoViewModel>> GetCustomers([FromBody]IEnumerable<string> tags)
         {
             var performers = await _clientRepository.GetCustomers();
             return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
