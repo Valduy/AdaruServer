@@ -19,15 +19,21 @@ namespace AdaruServer.Controllers
     public class ClientController : Controller
     {
         private IClientRepository _clientRepository;
+        private IPerformerRepository _performerRepository;
+        private ICustomerRepository _customerRepository;
         private IRoleRepository _roleRepository;
         private IMapper _mapper;
 
         public ClientController(
             IClientRepository clientRepository, 
+            IPerformerRepository performerRepository,
+            ICustomerRepository customerRepository,
             IRoleRepository roleRepository, 
             IMapper mapper)
         {
             _clientRepository = clientRepository;
+            _performerRepository = performerRepository;
+            _customerRepository = customerRepository;
             _roleRepository = roleRepository;
             _mapper = mapper;
         }
@@ -85,25 +91,25 @@ namespace AdaruServer.Controllers
 
         // api/client/performers
         [HttpGet("performers")]
-        public async Task<List<ClientInfoViewModel>> GetPerformers()
+        public async Task<List<PerformerInfoViewModel>> GetPerformers()
         {
-            var performers = await _clientRepository.GetPerformers();
-            return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
+            var performers = await _performerRepository.GetPerformers();
+            return await CreatePerformerViewModelsAsync(performers);
         }
 
         // api/client/performers/tags
         [HttpPost("performers/tags")]
-        public async Task<List<ClientInfoViewModel>> GetPerformers([FromBody]IEnumerable<string> tags)
+        public async Task<List<PerformerInfoViewModel>> GetPerformers([FromBody]IEnumerable<string> tags)
         {
-            var performers = await _clientRepository.GetPerformers(tags);
-            return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
+            var performers = await _performerRepository.GetPerformers(tags);
+            return await CreatePerformerViewModelsAsync(performers);
         }
 
         // api/client/customers
         [HttpGet("customers")]
         public async Task<List<ClientInfoViewModel>> GetCustomers()
         {
-            var performers = await _clientRepository.GetCustomers();
+            var performers = await _customerRepository.GetCustomers();
             return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
         }
 
@@ -111,7 +117,7 @@ namespace AdaruServer.Controllers
         [HttpPost("customers/tags")]
         public async Task<List<ClientInfoViewModel>> GetCustomers([FromBody]IEnumerable<string> tags)
         {
-            var performers = await _clientRepository.GetCustomers();
+            var performers = await _customerRepository.GetCustomers();
             return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
         }
 
@@ -136,6 +142,20 @@ namespace AdaruServer.Controllers
             }
 
             return identity;
+        }
+
+        private async Task<List<PerformerInfoViewModel>> CreatePerformerViewModelsAsync(List<PerformerInfo> performers)
+        {
+            var result = new List<PerformerInfoViewModel>();
+
+            foreach (var p in performers)
+            {
+                var model = _mapper.Map<PerformerInfoViewModel>(p);
+                model.Tags = (await _performerRepository.GetPerformerTags(model.Id.Value)).Select(t => t.Name);
+                result.Add(model);
+            }
+
+            return result;
         }
     }
 }

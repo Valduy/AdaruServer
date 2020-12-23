@@ -8,5 +8,6 @@ namespace DBRepository.Interfaces
     {
         Task<CustomerInfo> GetCustomer(int customerId);
         Task<List<CustomerInfo>> GetCustomers();
+        Task<List<CustomerInfo>> GetCustomers(IEnumerable<string> tags);
     }
 }

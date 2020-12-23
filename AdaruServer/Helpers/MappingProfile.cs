@@ -18,6 +18,7 @@ namespace AdaruServer.Helpers
             CreateMap<Client, ClientViewModel>();
             CreateMap<CustomerInfo, ClientInfoViewModel>();
             CreateMap<PerformerInfo, ClientInfoViewModel>();
+            CreateMap<PerformerInfo, PerformerInfoViewModel>();
             CreateMap<Models.Profile, ProfileViewModel>();
             CreateMap<Review, ReviewViewModel>();
             CreateMap<AddReviewViewModel, Review>();
