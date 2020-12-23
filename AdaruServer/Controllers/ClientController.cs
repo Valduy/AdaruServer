@@ -4,14 +4,16 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AdaruServer.Helpers;
+using AdaruServer.Extensions;
 using AdaruServer.ViewModels;
 using AutoMapper;
 using DBRepository;
 using DBRepository.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models;
+using AuthorizationOptions = AdaruServer.Helpers.AuthorizationOptions;
 
 namespace AdaruServer.Controllers
 {
@@ -135,6 +137,33 @@ namespace AdaruServer.Controllers
         {
             var performer = await _customerRepository.GetCustomer(id);
             return _mapper.Map<ClientInfoViewModel>(performer);
+        }
+
+        [Authorize]
+        [HttpGet("client/me")]
+        public async Task<ClientInfoViewModel> GetCustomer()
+        {
+            var id = int.Parse(User.GetName());
+            var user = await _clientRepository.GetClient(id);
+            var role = await _roleRepository.GetUserRole(user.IdRole);
+
+            switch (role.Role)
+            {
+                case "performer":
+                {
+                    var performer = await _performerRepository.GetPerformer(id);
+                    return await CreatePerformerInfoViewModelAsync(performer);
+                }
+                case "customer":
+                {
+                    var customer = await _customerRepository.GetCustomer(id);
+                    return _mapper.Map<ClientInfoViewModel>(customer);
+                }
+                default:
+                    throw new ArgumentException();
+            }
+
+            
         }
 
         private async Task<ClaimsIdentity> GetIdentity(string login, string password)
