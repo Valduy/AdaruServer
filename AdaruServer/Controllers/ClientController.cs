@@ -121,6 +121,14 @@ namespace AdaruServer.Controllers
             return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
         }
 
+        // api/client/customers/concrete
+        [HttpGet("customers/concrete")]
+        public async Task<ClientInfoViewModel> GetCustomer(int id)
+        {
+            var performer = await _customerRepository.GetCustomer(id);
+            return _mapper.Map<ClientInfoViewModel>(performer);
+        }
+
         private async Task<ClaimsIdentity> GetIdentity(string login, string password)
         {
             ClaimsIdentity identity = null;
