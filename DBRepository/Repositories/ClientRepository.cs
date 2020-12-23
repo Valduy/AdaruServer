@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
 using DBRepository.Extensions;
 using DBRepository.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using Models;
 using Npgsql;
+using DbUpdateException = Microsoft.EntityFrameworkCore.DbUpdateException;
 using Task = System.Threading.Tasks.Task;
 
 namespace DBRepository.Repositories
@@ -37,10 +38,28 @@ namespace DBRepository.Repositories
             return await context.PerformerInfos.ToListAsyncSafe();
         }
 
+        public async Task<List<CustomerInfo>> GetPerformers(IEnumerable<string> tags)
+        {
+            //await using var connection = new NpgsqlConnection(connectionString: ConnectionString);
+            //connection.Open();
+            //await using var command = connection.CreateCommand();
+            //var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
+            //command.CommandText = $"call get_performers_by_tags({string.Join(',', parameters)})";
+            //var reader = command.ExecuteReader();
+            //var result = ((IObjectContextAdapter)context)
+            
+            throw new NotImplementedException();
+        }
+
         public async Task<List<CustomerInfo>> GetCustomers()
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             return await context.CustomerInfos.ToListAsyncSafe();
+        }
+
+        public Task<List<CustomerInfo>> GetCustomers(IEnumerable<string> tags)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task AddClient(Client client)

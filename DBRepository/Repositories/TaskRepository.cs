@@ -104,13 +104,15 @@ namespace DBRepository.Repositories
 
         public async System.Threading.Tasks.Task AddTagsToTask(Task task, IEnumerable<string> tags)
         {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var connection = context.Database.GetDbConnection();
+            var command = connection.CreateCommand();
+            var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
+            command.CommandText = $"call add_tags_to_task({task.Id}, {string.Join(',', parameters)})";
+
             try
             {
-                await using var connection = new NpgsqlConnection(connectionString: ConnectionString);
-                connection.Open();
-                await using var command = connection.CreateCommand();
-                var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
-                command.CommandText = $"call add_tags_to_task({task.Id}, {string.Join(',', parameters)})";
+                await connection.OpenAsync();
                 await command.ExecuteNonQueryAsync();
             }
             catch (PostgresException ex)
