@@ -71,6 +71,12 @@ namespace AdaruServer.Services.Interfaces
             return result;
         }
 
+        public async Task<string> GetImage(Image image)
+        {
+            var bytes = await File.ReadAllBytesAsync(image.Path);
+            return Convert.ToBase64String(bytes);
+        }
+
         public void DeleteImage(Image image)
         {
             if (File.Exists(image.Path))

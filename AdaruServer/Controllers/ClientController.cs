@@ -229,6 +229,14 @@ namespace AdaruServer.Controllers
             }
         }
 
+        // api/client/get/avatar
+        [HttpGet("get/avatar")]
+        public async Task<string> GetAvatar(int id)
+        {
+            var image = await _imageRepository.GetImage(id);
+            return await _imageService.GetImage(image);
+        }
+
         private async Task<ClaimsIdentity> GetIdentity(string login, string password)
         {
             ClaimsIdentity identity = null;
