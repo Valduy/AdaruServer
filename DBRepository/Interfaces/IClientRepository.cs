@@ -10,5 +10,6 @@ namespace DBRepository.Interfaces
         Task<Client> GetClient(int clientId);
         Task<Client> GetClient(string login);
         Task AddClient(Client client);
+        Task UpdateClient(Client client);
     }
 }

@@ -114,7 +114,7 @@ namespace AdaruServer
                 app.UseDeveloperExceptionPage();
             }
 
-            app.ConfigureExceptionHandler();
+            //app.ConfigureExceptionHandler();
             app.UseAuthentication();
             app.UseStaticFiles();
 

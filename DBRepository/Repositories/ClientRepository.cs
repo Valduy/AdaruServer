@@ -58,5 +58,14 @@ namespace DBRepository.Repositories
                 throw;
             }
         }
+
+        public async Task UpdateClient(Client client)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var entry = context.Clients.FirstOrDefault(t => t.Id == client.Id)
+                        ?? throw new RepositoryException("Такого пользователя не существует.");
+            context.Entry(entry).CurrentValues.SetValues(client);
+            await context.SaveChangesAsync();
+        }
     }
 }

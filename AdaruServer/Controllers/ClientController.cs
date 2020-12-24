@@ -4,12 +4,17 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using AdaruServer.Extensions;
+using AdaruServer.Helpers;
 using AdaruServer.ViewModels;
 using AutoMapper;
 using DBRepository;
 using DBRepository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models;
@@ -20,23 +25,29 @@ namespace AdaruServer.Controllers
     [Route("api/[controller]")]
     public class ClientController : Controller
     {
+        private IWebHostEnvironment _environment;
         private IClientRepository _clientRepository;
         private IPerformerRepository _performerRepository;
         private ICustomerRepository _customerRepository;
         private IRoleRepository _roleRepository;
+        private IImageRepository _imageRepository;
         private IMapper _mapper;
 
         public ClientController(
+            IWebHostEnvironment environment,
             IClientRepository clientRepository, 
             IPerformerRepository performerRepository,
             ICustomerRepository customerRepository,
             IRoleRepository roleRepository, 
+            IImageRepository imageRepository,
             IMapper mapper)
         {
+            _environment = environment;
             _clientRepository = clientRepository;
             _performerRepository = performerRepository;
             _customerRepository = customerRepository;
             _roleRepository = roleRepository;
+            _imageRepository = imageRepository;
             _mapper = mapper;
         }
 
@@ -163,10 +174,7 @@ namespace AdaruServer.Controllers
                     throw new ArgumentException();
             }
         }
-
-        [HttpGet("test")]
-        public async Task<IActionResult> Test() => Ok();
-
+        
         // api/client/add/tags
         [Authorize]
         [HttpPost("add/tags")]
@@ -185,12 +193,57 @@ namespace AdaruServer.Controllers
             return Ok();
         }
 
+        // api/client/delete/tags
         [Authorize]
         [HttpDelete("delete/tags")]
         public async System.Threading.Tasks.Task DeletePerformerTags([FromBody] IEnumerable<string> tags)
         {
             var performer = await _performerRepository.GetPerformer(int.Parse(User.GetName()));
             await _performerRepository.DeletePerformerTags(performer, tags);
+        }
+
+        [Authorize]
+        [HttpPost("update/avatar")]
+        public async System.Threading.Tasks.Task UpdateAvatar([FromBody]string image)
+        {
+            var userId = int.Parse(User.GetName());
+            var client = await _clientRepository.GetClient(userId);
+            var path = Path.Combine(_environment.WebRootPath, "Images", client.Login);
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            var imageName = Regex.Replace(client.Login + DateTime.Now, @"\.|\s|:", (_) => "") + ".jpg";
+            var imagePath = Path.Combine(path, imageName);
+            var imageBytes = Convert.FromBase64String(image);
+            await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
+            //try
+            //{
+            //    await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
+            //}
+            //catch (Exception ex)
+            //{
+
+            //}
+
+            var newImage = new Image {Path = imagePath};
+            await _imageRepository.AddImage(newImage);
+
+            if (client.IdImage.HasValue)
+            {
+                var oldImage = await _imageRepository.GetImage(client.IdImage.Value);
+                client.IdImage = newImage.Id;
+                await _clientRepository.UpdateClient(client);
+                await _imageRepository.DeleteImage(oldImage.Id);
+                System.IO.File.Delete(oldImage.Path);
+            }
+            else
+            {
+                client.IdImage = newImage.Id;
+                await _clientRepository.UpdateClient(client);
+            }
         }
 
         private async Task<ClaimsIdentity> GetIdentity(string login, string password)
