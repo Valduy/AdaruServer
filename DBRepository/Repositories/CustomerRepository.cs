@@ -45,7 +45,7 @@ namespace DBRepository.Repositories
                 Login = r[1].ToString(),
                 Username = r[2].ToString(),
                 Role = r[3].ToString(),
-                IdImage = (int?)r[4],
+                IdImage = r[4] is DBNull ? null : (int?)r[4],
                 Resume = r[5] is DBNull ? null : r[5].ToString(),
                 Raiting = r[6] is DBNull ? 0 : (decimal)r[6],
                 Expirience = r[7] is DBNull ? 0 : (long)r[7],
