@@ -135,5 +135,22 @@ namespace AdaruServer.Controllers
 
             return Ok();
         }
+
+        // api/task/delete/tags?id=1
+        [Authorize]
+        [HttpDelete("delete/tags")]
+        public async Task<IActionResult> DeleteImageTags(int id, [FromBody] IEnumerable<string> tags)
+        {
+            var userId = int.Parse(User.GetName());
+            var image = await _profileRepository.GetImage(userId, id);
+
+            if (image == null)
+            {
+                return BadRequest(new { message = "Попытка изменить не своё изображение." });
+            }
+
+            await _profileRepository.DeleteImageTags(image, tags);
+            return Ok();
+        }
     }
 }
