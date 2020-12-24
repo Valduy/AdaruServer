@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AdaruServer.Extensions;
 using AdaruServer.Helpers;
+using AdaruServer.Services.Implementation;
+using AdaruServer.Services.Interfaces;
 using AutoMapper;
 using DBRepository.Factories;
 using DBRepository.Interfaces;
@@ -104,6 +106,8 @@ namespace AdaruServer
             services.AddScoped<ITaskRepository>(provider
                 => new TaskRepository(Configuration.GetConnectionString("DefaultConnection"),
                     provider.GetService<IRepositoryContextFactory>()));
+
+            services.AddScoped<IImageService, ImageService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

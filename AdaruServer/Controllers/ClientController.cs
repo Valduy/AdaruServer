@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using AdaruServer.Extensions;
 using AdaruServer.Helpers;
+using AdaruServer.Services.Implementation;
 using AdaruServer.ViewModels;
 using AutoMapper;
 using DBRepository;
@@ -31,6 +32,7 @@ namespace AdaruServer.Controllers
         private ICustomerRepository _customerRepository;
         private IRoleRepository _roleRepository;
         private IImageRepository _imageRepository;
+        private IImageService _imageService;
         private IMapper _mapper;
 
         public ClientController(
@@ -40,6 +42,7 @@ namespace AdaruServer.Controllers
             ICustomerRepository customerRepository,
             IRoleRepository roleRepository, 
             IImageRepository imageRepository,
+            IImageService imageService,
             IMapper mapper)
         {
             _environment = environment;
@@ -48,6 +51,7 @@ namespace AdaruServer.Controllers
             _customerRepository = customerRepository;
             _roleRepository = roleRepository;
             _imageRepository = imageRepository;
+            _imageService = imageService;
             _mapper = mapper;
         }
 
@@ -202,25 +206,14 @@ namespace AdaruServer.Controllers
             await _performerRepository.DeletePerformerTags(performer, tags);
         }
 
+        // api/client/update/avatar
         [Authorize]
         [HttpPost("update/avatar")]
         public async System.Threading.Tasks.Task UpdateAvatar([FromBody]string image)
         {
             var userId = int.Parse(User.GetName());
             var client = await _clientRepository.GetClient(userId);
-            var path = Path.Combine(_environment.WebRootPath, "Images", client.Login);
-
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-            var imageName = Regex.Replace(client.Login + DateTime.Now, @"\.|\s|:", (_) => "") + ".jpg";
-            var imagePath = Path.Combine(path, imageName);
-            var imageBytes = Convert.FromBase64String(image);
-            await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
-            var newImage = new Image {Path = imagePath};
-            await _imageRepository.AddImage(newImage);
+            var newImage = await _imageService.AddImageAsync(client.Login, image);
 
             if (client.IdImage.HasValue)
             {

@@ -85,5 +85,26 @@ namespace AdaruServer.Controllers
 
             return Ok();
         }
+
+        // api/profile/update
+        [Authorize]
+        [HttpPost("update")]
+        public async Task AddImages([FromBody]string[] images)
+        {
+            //try
+            //{
+            //    var userId = User.GetName();
+            //    var profile = await _profileRepository.GetProfile(int.Parse(userId));
+            //    profile.Resume = resume;
+            //    await _profileRepository.UpdateProfile(profile);
+            //    _mapper.Map<ProfileViewModel>(profile);
+            //}
+            //catch (RepositoryException ex)
+            //{
+            //    return BadRequest(new { message = ex.Message });
+            //}
+
+            //return Ok();
+        }
     }
 }
