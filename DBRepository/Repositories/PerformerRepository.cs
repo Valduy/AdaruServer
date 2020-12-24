@@ -94,6 +94,8 @@ namespace DBRepository.Repositories
             var command = connection.CreateCommand();
             var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
             command.CommandText = $"call delete_performer_tags({performer.Id}, {string.Join(',', parameters)})";
+            await connection.OpenAsync();
+            await command.ExecuteNonQueryAsync();
         }
     }
 }
