@@ -93,6 +93,17 @@ namespace DBRepository.Repositories
                 .Select(tt => tt.IdTag).Contains(t.Id)).ToListAsyncSafe();
         }
 
+        public async System.Threading.Tasks.Task DeleteTaskTags(Task task, IEnumerable<string> tags)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var connection = context.Database.GetDbConnection();
+            var command = connection.CreateCommand();
+            var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
+            command.CommandText = $"call delete_task_tags({task.Id}, {string.Join(',', parameters)})";
+            await connection.OpenAsync();
+            await command.ExecuteNonQueryAsync();
+        }
+
         public async System.Threading.Tasks.Task UpdateTask(Task task)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);

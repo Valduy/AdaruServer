@@ -185,6 +185,22 @@ namespace AdaruServer.Controllers
             return Ok();
         }
 
+        // api/task/delete/tags?id=1
+        [Authorize]
+        [HttpDelete("delete/tags")]
+        public async Task<IActionResult> DeleteTaskTags(int id, [FromBody] IEnumerable<string> tags)
+        {
+            var task = await _taskRepository.GetTask(id);
+
+            if (task.IdCustomer != int.Parse(User.GetName()))
+            {
+                return BadRequest(new { message = "Попытка изменить не свою задачу." });
+            }
+
+            await _taskRepository.DeleteTaskTags(task, tags);
+            return Ok();
+        }
+
         // api/task/status?id=1
         [Authorize]
         [HttpPost("status")]
