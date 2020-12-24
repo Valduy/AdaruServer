@@ -36,6 +36,13 @@ namespace DBRepository.Repositories
             await context.SaveChangesAsync();
         }
 
+        public async Task DeleteImage(Image image)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            context.Images.Remove(context.Images.First(i => i.Id == image.Id));
+            await context.SaveChangesAsync();
+        }
+
         public async Task<List<Tag>> GetImageTags(int imageId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);

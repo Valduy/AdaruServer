@@ -73,11 +73,25 @@ namespace DBRepository.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task RemoveImage(int profileId, Image image)
+        public async Task DeleteImage(int profileId, Image image)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             var profileImage = await context.ProfileImages.FirstOrDefaultAsync(
                 pi => pi.IdProfile == profileId && pi.IdImage == image.Id);
+
+            if (profileImage != null)
+            {
+                context.ProfileImages.Remove(profileImage);
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task DeleteImage(int profileId, int imageId)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var profileImage = await context.ProfileImages.FirstOrDefaultAsync(
+                pi => pi.IdProfile == profileId && pi.IdImage == imageId);
 
             if (profileImage != null)
             {

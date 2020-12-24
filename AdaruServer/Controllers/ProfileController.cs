@@ -105,5 +105,17 @@ namespace AdaruServer.Controllers
             var newImages = await _imageService.AddImagesAsync(client.Login, images);
             await _profileRepository.AddImages(client.Id, newImages);
         }
+
+        // api/profile/images/add
+        [Authorize]
+        [HttpDelete("image/delete")]
+        public async Task DeleteImage(int id)
+        {
+            var userId = int.Parse(User.GetName());
+            var image = await _imageRepository.GetImage(id);
+            await _profileRepository.DeleteImage(userId, image);
+            await _imageRepository.DeleteImage(image);
+            _imageService.DeleteImage(image);
+        }
     }
 }

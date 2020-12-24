@@ -8,6 +8,7 @@ using AdaruServer.Services.Implementation;
 using DBRepository.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Models;
+using Task = System.Threading.Tasks.Task;
 
 namespace AdaruServer.Services.Interfaces
 {
@@ -68,6 +69,14 @@ namespace AdaruServer.Services.Interfaces
             }
 
             return result;
+        }
+
+        public void DeleteImage(Image image)
+        {
+            if (File.Exists(image.Path))
+            {
+                File.Delete(image.Path);
+            }
         }
     }
 }
