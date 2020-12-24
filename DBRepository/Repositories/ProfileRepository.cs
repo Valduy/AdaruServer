@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DBRepository.Extensions;
 using DBRepository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -108,6 +109,57 @@ namespace DBRepository.Repositories
             if (entry == null) throw new ArgumentException("У клиента нет профиля.");
             context.Entry(entry).CurrentValues.SetValues(profile);
             await context.SaveChangesAsync();
+        }
+
+        public async Task<Image> GetImage(int profileId, int imageId)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return context.Images.First(i => i.Id == context.ProfileImages
+                .First(pi => pi.IdProfile == profileId && pi.IdImage == imageId).IdImage);
+        }
+
+        public async Task<List<Tag>> GetImageTags(int imageId)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return await context.Tags.Where(t => context.ImageTags
+                .Where(it => it.IdImage == imageId)
+                .Select(it => it.IdTag).Contains(t.Id)).ToListAsyncSafe();
+        }
+
+        public async Task AddTagsToImage(Image image, IEnumerable<string> tags)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var connection = context.Database.GetDbConnection();
+            var command = connection.CreateCommand();
+            var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
+            command.CommandText = $"call add_tags_to_image({image.Id}, {string.Join(',', parameters)})";
+
+            try
+            {
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (PostgresException ex)
+            {
+                switch (ex.SqlState)
+                {
+                    case PgsqlErrors.RaiseException:
+                        throw new RepositoryException(ex.MessageText);
+                }
+
+                throw;
+            }
+        }
+
+        public async Task DeleteImageTags(Image image, IEnumerable<string> tags)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var connection = context.Database.GetDbConnection();
+            var command = connection.CreateCommand();
+            var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
+            command.CommandText = $"call delete_image_tags({image.Id}, {string.Join(',', parameters)})";
+            await connection.OpenAsync();
+            await command.ExecuteNonQueryAsync();
         }
     }
 }

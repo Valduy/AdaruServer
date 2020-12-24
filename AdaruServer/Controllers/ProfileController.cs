@@ -117,5 +117,23 @@ namespace AdaruServer.Controllers
             await _imageRepository.DeleteImage(image);
             _imageService.DeleteImage(image);
         }
+
+        [Authorize]
+        [HttpPost("add/tags")]
+        public async Task<IActionResult> AddTagsToImage(int id, [FromBody]IEnumerable<string> tags)
+        {
+            try
+            {
+                var userId = int.Parse(User.GetName());
+                var image = await _profileRepository.GetImage(userId, id);
+                await _profileRepository.AddTagsToImage(image, tags);
+            }
+            catch (RepositoryException ex)
+            {
+                return BadRequest(new {message = ex.Message});
+            }
+
+            return Ok();
+        }
     }
 }

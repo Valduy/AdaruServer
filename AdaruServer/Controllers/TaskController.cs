@@ -92,7 +92,7 @@ namespace AdaruServer.Controllers
             return result;
         }
 
-        // api/task/my?id=1
+        // api/task/my
         [Authorize]
         [HttpGet("my")]
         public async Task<List<TaskViewModel>> GetMyTasks()

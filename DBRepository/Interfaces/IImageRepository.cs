@@ -11,6 +11,5 @@ namespace DBRepository.Interfaces
         Task AddImage(Image image);
         Task DeleteImage(int imageId);
         Task DeleteImage(Image image);
-        Task<List<Tag>> GetImageTags(int imageId);
     }
 }

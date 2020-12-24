@@ -5,6 +5,7 @@ using DBRepository.Extensions;
 using DBRepository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Npgsql;
 using Task = System.Threading.Tasks.Task;
 
 namespace DBRepository.Repositories
@@ -36,19 +37,6 @@ namespace DBRepository.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task DeleteImage(Image image)
-        {
-            await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            context.Images.Remove(context.Images.First(i => i.Id == image.Id));
-            await context.SaveChangesAsync();
-        }
-
-        public async Task<List<Tag>> GetImageTags(int imageId)
-        {
-            await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Tags.Where(t => context.ImageTags
-                .Where(it => it.IdImage == imageId)
-                .Select(it => it.IdTag).Contains(t.Id)).ToListAsyncSafe();
-        }
+        public async Task DeleteImage(Image image) => await DeleteImage(image.Id);
     }
 }
