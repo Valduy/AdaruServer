@@ -185,6 +185,14 @@ namespace AdaruServer.Controllers
             return Ok();
         }
 
+        [Authorize]
+        [HttpDelete("delete/tags")]
+        public async System.Threading.Tasks.Task DeletePerformerTags([FromBody] IEnumerable<string> tags)
+        {
+            var performer = await _performerRepository.GetPerformer(int.Parse(User.GetName()));
+            await _performerRepository.DeletePerformerTags(performer, tags);
+        }
+
         private async Task<ClaimsIdentity> GetIdentity(string login, string password)
         {
             ClaimsIdentity identity = null;

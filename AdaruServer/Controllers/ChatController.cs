@@ -19,17 +19,20 @@ namespace AdaruServer.Controllers
         private IChatRepository _chatRepository;
         private IMessageRepository _messageRepository;
         private IClientRepository _clientRepository;
+        private IRoleRepository _roleRepository;
         private IMapper _mapper;
 
         public ChatController(
             IChatRepository chatRepository,
             IMessageRepository messageRepository,
             IClientRepository clientRepository,
+            IRoleRepository roleRepository,
             IMapper mapper)
         {
             _chatRepository = chatRepository;
             _messageRepository = messageRepository;
             _clientRepository = clientRepository;
+            _roleRepository = roleRepository;
             _mapper = mapper;
         }
 
@@ -44,14 +47,16 @@ namespace AdaruServer.Controllers
 
             foreach (var c in chats)
             {
-                var client = await _clientRepository.GetClient(c.IdTarget == id ? c.IdSource : id); 
-                result.Add(_mapper.Map<ClientViewModel>(client));
+                var client = await _clientRepository.GetClient(c.IdTarget == id ? c.IdSource : id);
+                var model = _mapper.Map<ClientViewModel>(client);
+                model.Role = (await _roleRepository.GetUserRole(client.IdRole)).Role;
+                result.Add(model);
             }
 
             return result;
         }
 
-        // api/chat/client
+        // api/chat/client?id=1
         [Authorize]
         [HttpGet("client")]
         public async Task<ChatViewModel> GetChat(int id)
@@ -61,6 +66,7 @@ namespace AdaruServer.Controllers
             var result = _mapper.Map<ChatViewModel>(chat);
             var client = await _clientRepository.GetClient(chat.IdTarget == id ? chat.IdSource : id);
             result.Target = _mapper.Map<ClientViewModel>(client);
+            result.Target.Role = (await _roleRepository.GetUserRole(client.IdRole)).Role;
             result.Messages =
                 (await _messageRepository.GetMessages(chat.Id)).Select(m => _mapper.Map<MessageViewModel>(m));
             return result;

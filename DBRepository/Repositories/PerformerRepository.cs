@@ -86,5 +86,14 @@ namespace DBRepository.Repositories
                 throw;
             }
         }
+
+        public async Task DeletePerformerTags(PerformerInfo performer, IEnumerable<string> tags)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var connection = context.Database.GetDbConnection();
+            var command = connection.CreateCommand();
+            var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
+            command.CommandText = $"call delete_performer_tags({performer.Id}, {string.Join(',', parameters)})";
+        }
     }
 }
