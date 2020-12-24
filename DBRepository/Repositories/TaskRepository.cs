@@ -64,7 +64,7 @@ namespace DBRepository.Repositories
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             return await context.Tasks.Where(predicate).ToListAsyncSafe();
         }
-
+        
         public async Task<List<Task>> GetNewTasks()
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);

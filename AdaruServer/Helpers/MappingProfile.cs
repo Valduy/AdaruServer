@@ -16,6 +16,10 @@ namespace AdaruServer.Helpers
             CreateMap<AddTaskViewModel, Models.Task>();
             CreateMap<Models.Task, TaskViewModel>();
             CreateMap<Models.Task, TaskInfoViewModel>();
+            CreateMap<TaskInfo, TaskViewModel>()
+                .ForMember(m => m.Id, opt => opt.MapFrom(m => m.IdTask));
+            CreateMap<TaskInfo, ClientViewModel>()
+                .ForMember(m => m.Id, opt => opt.MapFrom(m => m.IdClient));
             CreateMap<Client, ClientViewModel>();
             CreateMap<CustomerInfo, ClientInfoViewModel>();
             CreateMap<PerformerInfo, ClientInfoViewModel>();

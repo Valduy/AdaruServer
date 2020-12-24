@@ -19,6 +19,7 @@ namespace AdaruServer.Controllers
     public class TaskController : Controller
     {
         private ITaskRepository _taskRepository;
+        private ITaskInfoRepository _taskInfoRepository;
         private IClientRepository _clientRepository;
         private IRoleRepository _roleRepository;
         private IStatusRepository _statusRepository;
@@ -26,12 +27,14 @@ namespace AdaruServer.Controllers
 
         public TaskController(
             ITaskRepository taskRepository, 
+            ITaskInfoRepository taskInfoRepository,
             IClientRepository clientRepository,
             IRoleRepository roleRepository,
             IStatusRepository statusRepository,
             IMapper mapper)
         {
             _taskRepository = taskRepository;
+            _taskInfoRepository = taskInfoRepository;
             _clientRepository = clientRepository;
             _roleRepository = roleRepository;
             _statusRepository = statusRepository;
@@ -68,6 +71,25 @@ namespace AdaruServer.Controllers
         {
             var tasks = await _taskRepository.GetPerformerTasks(id);
             return await CreateTasksViewModelsAsync(tasks);
+        }
+
+        // api/task/tags
+        [HttpPost("tags")]
+        public async Task<List<TaskViewModel>> GetTasksByTags([FromBody]IEnumerable<string> tags)
+        {
+            var tasks = await _taskInfoRepository.GetTasksByTags(tags);
+            var result = new List<TaskViewModel>();
+
+            foreach (var t in tasks)
+            {
+                var model = _mapper.Map<TaskViewModel>(t);
+                model.Tags = (await _taskRepository.GetTaskTags(t.IdTask.Value)).Select(tag => tag.Name).ToList();
+                model.Customer = _mapper.Map<ClientViewModel>(t);
+                model.Customer.Role = "customer";
+                result.Add(model);
+            }
+
+            return result;
         }
 
         // api/task/my?id=1
@@ -117,7 +139,7 @@ namespace AdaruServer.Controllers
 
             return model;
         }
-
+        
         // api/task/add
         [Authorize]
         [HttpPost("add")]

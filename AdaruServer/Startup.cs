@@ -98,6 +98,9 @@ namespace AdaruServer
             services.AddScoped<ITagRepository>(provider
                 => new TagRepository(Configuration.GetConnectionString("DefaultConnection"),
                     provider.GetService<IRepositoryContextFactory>()));
+            services.AddScoped<ITaskInfoRepository>(provider
+                => new TaskInfoRepository(Configuration.GetConnectionString("DefaultConnection"),
+                    provider.GetService<IRepositoryContextFactory>()));            
             services.AddScoped<ITaskRepository>(provider
                 => new TaskRepository(Configuration.GetConnectionString("DefaultConnection"),
                     provider.GetService<IRepositoryContextFactory>()));
