@@ -33,7 +33,7 @@ namespace DBRepository.Repositories
         public async Task<List<Chat>> GetChats(int id)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
-            return await context.Chats.Where(c => c.IdSource == id).ToListAsyncSafe();
+            return await context.Chats.Where(c => c.IdSource == id || c.IdTarget == id).ToListAsyncSafe();
         }
 
         public async Task AddChat(Chat chat)
