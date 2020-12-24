@@ -8,19 +8,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AdaruServer.Controllers
 {
+    [Route("api/[controller]")]
     public class TagController : Controller
     {
         private ITagRepository _tagRepository;
-        private IMapper _mapper;
 
-        public TagController(
-            ITagRepository tagRepository, 
-            IMapper mapper)
+        public TagController(ITagRepository tagRepository)
         {
             _tagRepository = tagRepository;
-            _mapper = mapper;
         }
 
-
+        [HttpGet("tags")]
+        public async Task<IEnumerable<string>> GetAllTags()
+        {
+            var tags = await _tagRepository.GetAllTags();
+            return tags.Select(t => t.Name);
+        }
     }
 }
