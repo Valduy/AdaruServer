@@ -219,15 +219,6 @@ namespace AdaruServer.Controllers
             var imagePath = Path.Combine(path, imageName);
             var imageBytes = Convert.FromBase64String(image);
             await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
-            //try
-            //{
-            //    await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
-            //}
-            //catch (Exception ex)
-            //{
-
-            //}
-
             var newImage = new Image {Path = imagePath};
             await _imageRepository.AddImage(newImage);
 
