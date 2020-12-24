@@ -8,6 +8,7 @@ namespace AdaruServer.Services.Implementation
 {
     public interface IImageService
     {
-        public Task<Image> AddImageAsync(string login, string image, string coerce = "");
+        public Task<Image> AddImageAsync(string login, string image);
+        public Task<List<Image>> AddImagesAsync(string login, string[] images);
     }
 }

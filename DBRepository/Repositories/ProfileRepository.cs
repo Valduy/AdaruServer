@@ -46,18 +46,18 @@ namespace DBRepository.Repositories
             }
         }
 
-        public async Task AddImage(Profile profile, Image image)
+        public async Task AddImage(int profileId, Image image)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             await context.ProfileImages.AddAsync(new ProfileImage()
             {
-                IdProfile = profile.IdClient,
+                IdProfile = profileId,
                 IdImage = image.Id
             });
             await context.SaveChangesAsync();
         }
 
-        public async Task AddImages(Profile profile, IEnumerable<Image> images)
+        public async Task AddImages(int profileId, IEnumerable<Image> images)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
 
@@ -65,7 +65,7 @@ namespace DBRepository.Repositories
             {
                 await context.ProfileImages.AddAsync(new ProfileImage()
                 {
-                    IdProfile = profile.IdClient,
+                    IdProfile = profileId,
                     IdImage = image.Id
                 });
             }
@@ -73,11 +73,11 @@ namespace DBRepository.Repositories
             await context.SaveChangesAsync();
         }
 
-        public async Task RemoveImage(Profile profile, Image image)
+        public async Task RemoveImage(int profileId, Image image)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             var profileImage = await context.ProfileImages.FirstOrDefaultAsync(
-                pi => pi.IdProfile == profile.IdClient && pi.IdImage == image.Id);
+                pi => pi.IdProfile == profileId && pi.IdImage == image.Id);
 
             if (profileImage != null)
             {

@@ -9,9 +9,9 @@ namespace DBRepository.Interfaces
     {
         Task<Profile> GetProfile(int profileId);
         Task AddProfile(Profile profile);
-        Task AddImage(Profile profile, Image image);
-        Task AddImages(Profile profile, IEnumerable<Image> images);
-        Task RemoveImage(Profile profile, Image image);
+        Task AddImage(int profileId, Image image);
+        Task AddImages(int profileId, IEnumerable<Image> images);
+        Task RemoveImage(int profileId, Image image);
         Task UpdateProfile(Profile profile);
     }
 }

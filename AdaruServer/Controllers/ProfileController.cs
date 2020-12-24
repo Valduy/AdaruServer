@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AdaruServer.Extensions;
+using AdaruServer.Services.Implementation;
 using AdaruServer.ViewModels;
 using AutoMapper;
 using DBRepository;
@@ -18,13 +19,22 @@ namespace AdaruServer.Controllers
     public class ProfileController : Controller
     {
         private IProfileRepository _profileRepository;
+        private IClientRepository _clientRepository;
+        private IImageRepository _imageRepository;
+        private IImageService _imageService;
         private IMapper _mapper;
 
         public ProfileController(
             IProfileRepository profileRepository,
+            IClientRepository clientRepository,
+            IImageRepository imageRepository,
+            IImageService imageService,
             IMapper mapper)
         {
             _profileRepository = profileRepository;
+            _clientRepository = clientRepository;
+            _imageRepository = imageRepository;
+            _imageService = imageService;
             _mapper = mapper;
         }
 
@@ -86,25 +96,14 @@ namespace AdaruServer.Controllers
             return Ok();
         }
 
-        // api/profile/update
+        // api/profile/images/add
         [Authorize]
-        [HttpPost("update")]
+        [HttpPost("images/add")]
         public async Task AddImages([FromBody]string[] images)
         {
-            //try
-            //{
-            //    var userId = User.GetName();
-            //    var profile = await _profileRepository.GetProfile(int.Parse(userId));
-            //    profile.Resume = resume;
-            //    await _profileRepository.UpdateProfile(profile);
-            //    _mapper.Map<ProfileViewModel>(profile);
-            //}
-            //catch (RepositoryException ex)
-            //{
-            //    return BadRequest(new { message = ex.Message });
-            //}
-
-            //return Ok();
+            var client = await _clientRepository.GetClient(int.Parse(User.GetName()));
+            var newImages = await _imageService.AddImagesAsync(client.Login, images);
+            await _profileRepository.AddImages(client.Id, newImages);
         }
     }
 }

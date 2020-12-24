@@ -211,8 +211,7 @@ namespace AdaruServer.Controllers
         [HttpPost("update/avatar")]
         public async System.Threading.Tasks.Task UpdateAvatar([FromBody]string image)
         {
-            var userId = int.Parse(User.GetName());
-            var client = await _clientRepository.GetClient(userId);
+            var client = await _clientRepository.GetClient(int.Parse(User.GetName()));
             var newImage = await _imageService.AddImageAsync(client.Login, image);
 
             if (client.IdImage.HasValue)
