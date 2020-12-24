@@ -47,7 +47,7 @@ namespace AdaruServer.Controllers
 
             foreach (var c in chats)
             {
-                var client = await _clientRepository.GetClient(c.IdTarget == id ? c.IdSource : id);
+                var client = await _clientRepository.GetClient(c.IdTarget != id ? c.IdTarget : c.IdSource);
                 var model = _mapper.Map<ClientViewModel>(client);
                 model.Role = (await _roleRepository.GetUserRole(client.IdRole)).Role;
                 result.Add(model);
