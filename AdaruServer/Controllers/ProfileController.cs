@@ -118,6 +118,7 @@ namespace AdaruServer.Controllers
             _imageService.DeleteImage(image);
         }
 
+        // api/profile/add/tags
         [Authorize]
         [HttpPost("add/tags")]
         public async Task<IActionResult> AddTagsToImage(int id, [FromBody]IEnumerable<string> tags)
@@ -134,6 +135,19 @@ namespace AdaruServer.Controllers
             }
 
             return Ok();
+        }
+
+        // api/task/get/image
+        [HttpGet("get/image")]
+        public async Task<ImageViewModel> GetImage(int id)
+        {
+            var image = await _imageRepository.GetImage(id);
+            var result = new ImageViewModel
+            {
+                Image = await _imageService.GetImage(image),
+                Tags = (await _profileRepository.GetImageTags(image.Id)).Select(t => t.Name)
+            };
+            return result;
         }
 
         // api/task/delete/tags?id=1
