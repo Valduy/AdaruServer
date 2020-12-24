@@ -8,6 +8,8 @@ using DBRepository.Helpers;
 using DBRepository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models;
+using Npgsql;
+using Task = System.Threading.Tasks.Task;
 
 namespace DBRepository.Repositories
 {
@@ -58,6 +60,31 @@ namespace DBRepository.Repositories
                 Raiting = r[6] is DBNull ? 0 : (decimal)r[6],
                 Expirience = r[7] is DBNull ? 0 : (long)r[7],
             }).ToList();
+        }
+
+        public async Task AddTagsToPerformer(PerformerInfo performer, IEnumerable<string> tags)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            var connection = context.Database.GetDbConnection();
+            var command = connection.CreateCommand();
+            var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
+            command.CommandText = $"call add_tags_to_performer({performer.Id}, {string.Join(',', parameters)})";
+
+            try
+            {
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (PostgresException ex)
+            {
+                switch (ex.SqlState)
+                {
+                    case PgsqlErrors.RaiseException:
+                        throw new RepositoryException(ex.MessageText);
+                }
+
+                throw;
+            }
         }
     }
 }

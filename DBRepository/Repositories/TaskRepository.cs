@@ -122,6 +122,8 @@ namespace DBRepository.Repositories
                     case PgsqlErrors.RaiseException:
                         throw new RepositoryException(ex.MessageText);
                 }
+
+                throw;
             }
         }
     }

@@ -127,7 +127,7 @@ namespace AdaruServer.Controllers
         [HttpPost("customers/tags")]
         public async Task<List<ClientInfoViewModel>> GetCustomers([FromBody]IEnumerable<string> tags)
         {
-            var performers = await _customerRepository.GetCustomers();
+            var performers = await _customerRepository.GetCustomers(tags);
             return performers.Select(p => _mapper.Map<ClientInfoViewModel>(p)).ToList();
         }
 
@@ -162,8 +162,27 @@ namespace AdaruServer.Controllers
                 default:
                     throw new ArgumentException();
             }
+        }
 
-            
+        [HttpGet("test")]
+        public async Task<IActionResult> Test() => Ok();
+
+        // api/client/add/tags
+        [Authorize]
+        [HttpPost("add/tags")]
+        public async Task<IActionResult> AddTagsToPerformer([FromBody]IEnumerable<string> tags)
+        {
+            try
+            {
+                var performer = await _performerRepository.GetPerformer(int.Parse(User.GetName()));
+                await _performerRepository.AddTagsToPerformer(performer, tags);
+            }
+            catch (RepositoryException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
+            return Ok();
         }
 
         private async Task<ClaimsIdentity> GetIdentity(string login, string password)

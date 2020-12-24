@@ -125,9 +125,8 @@ namespace AdaruServer.Controllers
         {
             try
             {
-                var userId = User.GetName();
                 var newTask = _mapper.Map<Models.Task>(task);
-                newTask.IdCustomer = int.Parse(userId);
+                newTask.IdCustomer = int.Parse(User.GetName());
                 newTask.IdStatus = (await _statusRepository.GetTaskStatus("new")).Id;
                 newTask.Time = DateTime.Now;
                 await _taskRepository.AddTask(newTask);
@@ -169,14 +168,13 @@ namespace AdaruServer.Controllers
         [HttpPost("status")]
         public async Task<IActionResult> ChangeTaskStatus(int id, [FromBody]string status)
         {
-            var userId = User.GetName();
             var task = await _taskRepository.GetTask(id);
 
             if (task == null)
             {
                 return BadRequest(new {message="Такой задачи нет."});
             }
-            if (task.IdCustomer != int.Parse(userId))
+            if (task.IdCustomer != int.Parse(User.GetName()))
             {
                 return BadRequest(new {message="Попытка изменить не свою задачу"});
             }
