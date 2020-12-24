@@ -126,9 +126,7 @@ namespace DBRepository
                     .HasColumnName("login")
                     .IsFixedLength(true);
 
-                entity.Property(e => e.Path)
-                    .HasMaxLength(200)
-                    .HasColumnName("path");
+                entity.Property(e => e.IdImage).HasColumnName("id_image");
 
                 entity.Property(e => e.Resume)
                     .HasMaxLength(1000)
@@ -158,9 +156,7 @@ namespace DBRepository
                     .HasColumnName("login")
                     .IsFixedLength(true);
 
-                entity.Property(e => e.Path)
-                    .HasMaxLength(200)
-                    .HasColumnName("path");
+                entity.Property(e => e.IdImage).HasColumnName("id_image");
 
                 entity.Property(e => e.Raiting).HasColumnName("raiting");
 
@@ -261,9 +257,7 @@ namespace DBRepository
                     .HasColumnName("login")
                     .IsFixedLength(true);
 
-                entity.Property(e => e.Path)
-                    .HasMaxLength(200)
-                    .HasColumnName("path");
+                entity.Property(e => e.IdImage).HasColumnName("id_image");
 
                 entity.Property(e => e.Raiting).HasColumnName("raiting");
 
