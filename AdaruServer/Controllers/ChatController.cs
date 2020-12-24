@@ -38,12 +38,13 @@ namespace AdaruServer.Controllers
         [HttpGet("chats")]
         public async Task<List<ClientViewModel>> GetChats()
         {
-            var chats = await _chatRepository.GetChats(int.Parse(User.GetName()));
+            var id = int.Parse(User.GetName());
+            var chats = await _chatRepository.GetChats(id);
             var result = new List<ClientViewModel>();
 
             foreach (var c in chats)
             {
-                var client = await _clientRepository.GetClient(c.IdTarget);
+                var client = await _clientRepository.GetClient(c.IdTarget == id ? c.IdSource : id); 
                 result.Add(_mapper.Map<ClientViewModel>(client));
             }
 
@@ -58,7 +59,7 @@ namespace AdaruServer.Controllers
             var chat = await _chatRepository.GetChat(int.Parse(User.GetName()), id);
             if (chat == null) return null;
             var result = _mapper.Map<ChatViewModel>(chat);
-            var client = await _clientRepository.GetClient(chat.IdTarget);
+            var client = await _clientRepository.GetClient(chat.IdTarget == id ? chat.IdSource : id);
             result.Target = _mapper.Map<ClientViewModel>(client);
             result.Messages =
                 (await _messageRepository.GetMessages(chat.Id)).Select(m => _mapper.Map<MessageViewModel>(m));
