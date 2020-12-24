@@ -67,8 +67,13 @@ namespace AdaruServer.Controllers
             var client = await _clientRepository.GetClient(chat.IdTarget == id ? chat.IdSource : id);
             result.Target = _mapper.Map<ClientViewModel>(client);
             result.Target.Role = (await _roleRepository.GetUserRole(client.IdRole)).Role;
-            result.Messages =
-                (await _messageRepository.GetMessages(chat.Id)).Select(m => _mapper.Map<MessageViewModel>(m));
+            result.Messages = (await _messageRepository.GetMessages(chat.Id))
+                .Select(m =>
+                {
+                    var message = _mapper.Map<MessageViewModel>(m);
+                    message.Username = client.Username;
+                    return message;
+                });
             return result;
         }
 
