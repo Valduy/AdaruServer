@@ -9,6 +9,7 @@ namespace Models
     {
         public Task()
         {
+            Invites = new HashSet<Invite>();
             TaskTags = new HashSet<TaskTag>();
         }
 
@@ -23,6 +24,7 @@ namespace Models
         public virtual Client IdCustomerNavigation { get; set; }
         public virtual Client IdPerformerNavigation { get; set; }
         public virtual TaskStatus IdStatusNavigation { get; set; }
+        public virtual ICollection<Invite> Invites { get; set; }
         public virtual ICollection<TaskTag> TaskTags { get; set; }
     }
 }

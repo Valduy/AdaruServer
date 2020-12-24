@@ -22,6 +22,7 @@ namespace DBRepository
         public virtual DbSet<CustomerInfo> CustomerInfos { get; set; }
         public virtual DbSet<Image> Images { get; set; }
         public virtual DbSet<ImageTag> ImageTags { get; set; }
+        public virtual DbSet<Invite> Invites { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<PerformerInfo> PerformerInfos { get; set; }
         public virtual DbSet<PerformerTag> PerformerTags { get; set; }
@@ -87,14 +88,12 @@ namespace DBRepository
                 entity.Property(e => e.Login)
                     .IsRequired()
                     .HasMaxLength(20)
-                    .HasColumnName("login")
-                    .IsFixedLength(true);
+                    .HasColumnName("login");
 
                 entity.Property(e => e.Password)
                     .IsRequired()
                     .HasMaxLength(20)
-                    .HasColumnName("password")
-                    .IsFixedLength(true);
+                    .HasColumnName("password");
 
                 entity.Property(e => e.Username)
                     .IsRequired()
@@ -121,12 +120,11 @@ namespace DBRepository
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.IdImage).HasColumnName("id_image");
+
                 entity.Property(e => e.Login)
                     .HasMaxLength(20)
-                    .HasColumnName("login")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.IdImage).HasColumnName("id_image");
+                    .HasColumnName("login");
 
                 entity.Property(e => e.Resume)
                     .HasMaxLength(1000)
@@ -151,12 +149,11 @@ namespace DBRepository
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.IdImage).HasColumnName("id_image");
+
                 entity.Property(e => e.Login)
                     .HasMaxLength(20)
-                    .HasColumnName("login")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.IdImage).HasColumnName("id_image");
+                    .HasColumnName("login");
 
                 entity.Property(e => e.Raiting).HasColumnName("raiting");
 
@@ -212,6 +209,30 @@ namespace DBRepository
                     .HasConstraintName("image_tags_id_tag_fkey");
             });
 
+            modelBuilder.Entity<Invite>(entity =>
+            {
+                entity.HasKey(e => new { e.IdTask, e.IdPerformer })
+                    .HasName("invite_pkey");
+
+                entity.ToTable("invite");
+
+                entity.Property(e => e.IdTask).HasColumnName("id_task");
+
+                entity.Property(e => e.IdPerformer).HasColumnName("id_performer");
+
+                entity.HasOne(d => d.IdPerformerNavigation)
+                    .WithMany(p => p.Invites)
+                    .HasForeignKey(d => d.IdPerformer)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("invite_id_performer_fkey");
+
+                entity.HasOne(d => d.IdTaskNavigation)
+                    .WithMany(p => p.Invites)
+                    .HasForeignKey(d => d.IdTask)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("invite_id_task_fkey");
+            });
+
             modelBuilder.Entity<Message>(entity =>
             {
                 entity.ToTable("message");
@@ -252,12 +273,11 @@ namespace DBRepository
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.IdImage).HasColumnName("id_image");
+
                 entity.Property(e => e.Login)
                     .HasMaxLength(20)
-                    .HasColumnName("login")
-                    .IsFixedLength(true);
-
-                entity.Property(e => e.IdImage).HasColumnName("id_image");
+                    .HasColumnName("login");
 
                 entity.Property(e => e.Raiting).HasColumnName("raiting");
 
@@ -451,27 +471,29 @@ namespace DBRepository
 
                 entity.Property(e => e.IdClient).HasColumnName("id_client");
 
+                entity.Property(e => e.IdTask).HasColumnName("id_task");
+
                 entity.Property(e => e.Login)
                     .HasMaxLength(20)
-                    .HasColumnName("login")
-                    .IsFixedLength(true);
+                    .HasColumnName("login");
 
                 entity.Property(e => e.Status)
                     .HasMaxLength(20)
                     .HasColumnName("status");
 
+                entity.Property(e => e.Time).HasColumnName("time");
+
                 entity.Property(e => e.Username)
                     .HasMaxLength(50)
                     .HasColumnName("username");
-
-                entity.Property(e => e.IdTask).HasColumnName("id_task");
-
-                entity.Property(e => e.Time).HasColumnName("time");
             });
 
             modelBuilder.Entity<TaskStatus>(entity =>
             {
                 entity.ToTable("task_status");
+
+                entity.HasIndex(e => e.Status, "task_status_status_key")
+                    .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -510,6 +532,9 @@ namespace DBRepository
             modelBuilder.Entity<UserRole>(entity =>
             {
                 entity.ToTable("user_role");
+
+                entity.HasIndex(e => e.Role, "user_role_role_key")
+                    .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
