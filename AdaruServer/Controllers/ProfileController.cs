@@ -137,8 +137,8 @@ namespace AdaruServer.Controllers
             return Ok();
         }
 
-        // api/task/get/image
-        [HttpGet("get/image")]
+        // api/task/image/get
+        [HttpGet("image/get")]
         public async Task<ImageViewModel> GetImage(int id)
         {
             var image = await _imageRepository.GetImage(id);
