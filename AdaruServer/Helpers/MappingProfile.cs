@@ -34,6 +34,7 @@ namespace AdaruServer.Helpers
                 .ForMember(m => m.Name, opt => opt.MapFrom(m => m));
             CreateMap<string, Models.Profile>()
                 .ForMember(m => m.Resume, opt => opt.MapFrom(m => m));
+            CreateMap<Invite, InviteViewModel>();
         }
     }
 }

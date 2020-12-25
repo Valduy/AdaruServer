@@ -211,12 +211,14 @@ namespace DBRepository
 
             modelBuilder.Entity<Invite>(entity =>
             {
-                entity.HasKey(e => new { e.IdTask, e.IdPerformer })
+                entity.HasKey(e => e.IdTask)
                     .HasName("invite_pkey");
 
                 entity.ToTable("invite");
 
-                entity.Property(e => e.IdTask).HasColumnName("id_task");
+                entity.Property(e => e.IdTask)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id_task");
 
                 entity.Property(e => e.IdPerformer).HasColumnName("id_performer");
 
@@ -227,8 +229,8 @@ namespace DBRepository
                     .HasConstraintName("invite_id_performer_fkey");
 
                 entity.HasOne(d => d.IdTaskNavigation)
-                    .WithMany(p => p.Invites)
-                    .HasForeignKey(d => d.IdTask)
+                    .WithOne(p => p.Invite)
+                    .HasForeignKey<Invite>(d => d.IdTask)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("invite_id_task_fkey");
             });

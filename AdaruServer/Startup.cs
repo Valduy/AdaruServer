@@ -79,6 +79,9 @@ namespace AdaruServer
             services.AddScoped<IImageRepository>(provider
                 => new ImageRepository(Configuration.GetConnectionString("DefaultConnection"),
                     provider.GetService<IRepositoryContextFactory>()));
+            services.AddScoped<IInviteRepository>(provider
+                => new InviteRepository(Configuration.GetConnectionString("DefaultConnection"),
+                    provider.GetService<IRepositoryContextFactory>()));
             services.AddScoped<IMessageRepository>(provider
                 => new MessageRepository(Configuration.GetConnectionString("DefaultConnection"),
                     provider.GetService<IRepositoryContextFactory>()));
