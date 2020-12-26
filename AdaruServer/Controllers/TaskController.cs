@@ -152,6 +152,7 @@ namespace AdaruServer.Controllers
                 newTask.IdStatus = (await _statusRepository.GetTaskStatus("new")).Id;
                 newTask.Time = DateTime.Now;
                 await _taskRepository.AddTask(newTask);
+                await _taskRepository.AddTagsToTask(newTask, task.Tags);
             }
             catch (RepositoryException ex)
             {

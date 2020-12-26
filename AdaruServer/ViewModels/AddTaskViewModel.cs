@@ -9,5 +9,6 @@ namespace AdaruServer.ViewModels
     {
         public string Header { get; set; }
         public string Content { get; set; }
+        public IEnumerable<string> Tags { get; set; }
     }
 }
