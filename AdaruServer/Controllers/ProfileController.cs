@@ -11,6 +11,7 @@ using DBRepository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Profile = Models.Profile;
 using Task = System.Threading.Tasks.Task;
 
 namespace AdaruServer.Controllers
@@ -63,16 +64,14 @@ namespace AdaruServer.Controllers
         [HttpGet("my")]
         public async Task<ProfileViewModel> GetProfile()
         {
-            var profile = await _profileRepository.GetProfile(int.Parse(User.GetName()));
-            return _mapper.Map<ProfileViewModel>(profile);
+            return await GetProfileViewModelAsync(await _profileRepository.GetProfile(int.Parse(User.GetName())));
         }
 
         // api/profile/concrete?id=1
         [HttpGet("concrete")]
         public async Task<ProfileViewModel> GetProfile(int id)
         {
-            var profile = await _profileRepository.GetProfile(id);
-            return _mapper.Map<ProfileViewModel>(profile);
+            return await GetProfileViewModelAsync(await _profileRepository.GetProfile(id));
         }
 
         // api/profile/update
@@ -165,6 +164,13 @@ namespace AdaruServer.Controllers
 
             await _profileRepository.DeleteImageTags(image, tags);
             return Ok();
+        }
+
+        private async Task<ProfileViewModel> GetProfileViewModelAsync(Profile profile)
+        {
+            var result = _mapper.Map<ProfileViewModel>(profile);
+            result.Images = (await _profileRepository.GetProfileImages(profile)).Select(i => i.Id);
+            return result;
         }
     }
 }

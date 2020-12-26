@@ -8,6 +8,6 @@ namespace AdaruServer.ViewModels
     public class ProfileViewModel
     {
         public string Resume { get; set; }
-        // TODO: картинки
+        public IEnumerable<int> Images { get; set; }
     }
 }

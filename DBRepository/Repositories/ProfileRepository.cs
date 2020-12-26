@@ -111,6 +111,15 @@ namespace DBRepository.Repositories
             await context.SaveChangesAsync();
         }
 
+        public async Task<List<Image>> GetProfileImages(Profile profile)
+        {
+            await using var context = ContextFactory.CreateDbContext(ConnectionString);
+            return await context.Images.Where(i => context.ProfileImages
+                .Where(pi => pi.IdProfile == profile.IdClient)
+                .Any(pi => pi.IdImage == i.Id))
+                .ToListAsyncSafe();
+        }
+
         public async Task<Image> GetImage(int profileId, int imageId)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
