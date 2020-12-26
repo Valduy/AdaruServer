@@ -18,6 +18,7 @@ namespace DBRepository.Interfaces
         Task<Image> GetImage(int profileId, int imageId);
         Task<List<Tag>> GetImageTags(int imageId);
         Task AddTagsToImage(Image image, IEnumerable<string> tags);
+        Task AddTagsToImage(int imageId, IEnumerable<string> tags);
         Task DeleteImageTags(Image image, IEnumerable<string> tags);
     }
 }

@@ -98,11 +98,31 @@ namespace AdaruServer.Controllers
         // api/profile/images/add
         [Authorize]
         [HttpPost("images/add")]
-        public async Task AddImages([FromBody]string[] images)
+        public async Task AddImages([FromBody]IEnumerable<ImageViewModel> images)
         {
             var client = await _clientRepository.GetClient(int.Parse(User.GetName()));
-            var newImages = await _imageService.AddImagesAsync(client.Login, images);
+            var newImages = await _imageService
+                .AddImagesAsync(client.Login, images.Select(i => i.Image));
             await _profileRepository.AddImages(client.Id, newImages);
+
+            var imagesWithTags = newImages
+                .Zip(images, (ni, i) => new
+                {
+                    ni.Id, 
+                    i.Tags
+                });
+
+            try
+            {
+                foreach (var it in imagesWithTags)
+                {
+                    await _profileRepository.AddTagsToImage(it.Id, it.Tags);
+                }
+            }
+            catch (RepositoryException ex)
+            {
+                BadRequest(new { message = ex.Message });
+            }
         }
 
         // api/profile/images/add

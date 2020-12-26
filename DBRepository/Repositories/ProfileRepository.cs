@@ -135,13 +135,16 @@ namespace DBRepository.Repositories
                 .Select(it => it.IdTag).Contains(t.Id)).ToListAsyncSafe();
         }
 
-        public async Task AddTagsToImage(Image image, IEnumerable<string> tags)
+        public async Task AddTagsToImage(Image image, IEnumerable<string> tags) 
+            => await AddTagsToImage(image.Id, tags);
+
+        public async Task AddTagsToImage(int imageId, IEnumerable<string> tags)
         {
             await using var context = ContextFactory.CreateDbContext(ConnectionString);
             var connection = context.Database.GetDbConnection();
             var command = connection.CreateCommand();
             var parameters = (tags as string[] ?? tags.ToArray()).Select(t => $"\'{t}\'");
-            command.CommandText = $"call add_tags_to_image({image.Id}, {string.Join(',', parameters)})";
+            command.CommandText = $"call add_tags_to_image({imageId}, {string.Join(',', parameters)})";
 
             try
             {

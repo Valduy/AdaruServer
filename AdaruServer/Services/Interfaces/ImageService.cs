@@ -30,22 +30,18 @@ namespace AdaruServer.Services.Interfaces
         public async Task<Image> AddImageAsync(string login, string image)
         {
             var path = Path.Combine(_environment.WebRootPath, "Images", login);
-            var imageName = Regex.Replace(login + DateTime.Now, @"\.|\s|:", (_) => "") + Jpg;
+            var imageName = GetImageName(login);
             var imagePath = Path.Combine(path, imageName);
 
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
-            
-            var imageBytes = Convert.FromBase64String(image);
-            await File.WriteAllBytesAsync(imagePath, imageBytes);
-            var newImage = new Image { Path = imagePath };
-            await _imageRepository.AddImage(newImage);
-            return newImage;
+
+            return await SaveImageAsync(imagePath, image);
         }
 
-        public async Task<List<Image>> AddImagesAsync(string login, string[] images)
+        public async Task<List<Image>> AddImagesAsync(string login, IEnumerable<string> images)
         {
             var path = Path.Combine(_environment.WebRootPath, "Images", login);
 
@@ -55,17 +51,15 @@ namespace AdaruServer.Services.Interfaces
             }
 
             var result = new List<Image>();
-            var name = Regex.Replace(login + DateTime.Now, @"\.|\s|:", (_) => "");
+            var name = GetImageName(login);
+            int i = 0;
 
-            for (int i = 0; i < images.Length; i++)
+            foreach (var image in images)
             {
-                var imageName = name + i + Jpg;
+                var imageName = i + name;
                 var imagePath = Path.Combine(path, imageName);
-                var imageBytes = Convert.FromBase64String(images[i]);
-                await File.WriteAllBytesAsync(imagePath, imageBytes);
-                var newImage = new Image { Path = imagePath };
-                await _imageRepository.AddImage(newImage);
-                result.Add(newImage);
+                result.Add(await SaveImageAsync(imagePath, image));
+                i++;
             }
 
             return result;
@@ -84,5 +78,17 @@ namespace AdaruServer.Services.Interfaces
                 File.Delete(image.Path);
             }
         }
+
+        private async Task<Image> SaveImageAsync(string path, string image)
+        {
+            var imageBytes = Convert.FromBase64String(image);
+            await File.WriteAllBytesAsync(path, imageBytes);
+            var newImage = new Image { Path = path };
+            await _imageRepository.AddImage(newImage);
+            return newImage;
+        }
+
+        private string GetImageName(string login) 
+            => Regex.Replace(login + DateTime.Now, @"\.|\s|:", (_) => "") + Jpg;
     }
 }
