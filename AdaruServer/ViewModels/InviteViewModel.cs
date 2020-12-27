@@ -9,5 +9,6 @@ namespace AdaruServer.ViewModels
     {
         public int IdTask { get; set; }
         public int IdPerformer { get; set; }
+        public string Header { get; set; }
     }
 }

@@ -74,16 +74,12 @@ namespace AdaruServer.Controllers
             {
                 case "performer":
                 {
-                    return (await _inviteRepository.GetInvitesToPerformer(id))
-                        .Select(i => _mapper.Map<InviteViewModel>(i))
-                        .ToList();
+                    return await GetInvitesViewModels(await _inviteRepository.GetInvitesToPerformer(id));
                 }
                 case "customer":
                 {
-                    return (await _inviteRepository.GetCustomerInvites(id))
-                        .Select(i => _mapper.Map<InviteViewModel>(i))
-                        .ToList();
-                    }
+                    return await GetInvitesViewModels(await _inviteRepository.GetCustomerInvites(id));
+                }
                 default:
                     throw new ArgumentException();
             }
@@ -158,6 +154,20 @@ namespace AdaruServer.Controllers
 
             await _inviteRepository.DeleteInvite(invite);
             return Ok();
+        }
+
+        private async Task<List<InviteViewModel>> GetInvitesViewModels(List<Invite> invites)
+        {
+            var result = new List<InviteViewModel>();
+
+            foreach (var i in invites)
+            {
+                var model = _mapper.Map<InviteViewModel>(i);
+                model.Header = (await _taskRepository.GetTask(model.IdTask)).Header;
+                result.Add(model);
+            }
+
+            return result;
         }
     }
 }
