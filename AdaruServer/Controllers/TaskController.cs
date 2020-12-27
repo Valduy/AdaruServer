@@ -220,7 +220,7 @@ namespace AdaruServer.Controllers
 
             try
             {
-                task.IdStatus = (await _statusRepository.GetTaskStatus("status")).Id;
+                task.IdStatus = (await _statusRepository.GetTaskStatus(status)).Id;
                 await _taskRepository.UpdateTask(task);
             }
             catch (RepositoryException ex)
