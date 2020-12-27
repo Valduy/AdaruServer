@@ -10,6 +10,5 @@ namespace AdaruServer.ViewModels
         public string Resume { get; set; }
         public decimal? Raiting { get; set; }
         public long? Expirience { get; set; }
-        public int? IdImage { get; set; }
     }
 }

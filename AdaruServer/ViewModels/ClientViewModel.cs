@@ -11,6 +11,6 @@ namespace AdaruServer.ViewModels
         public string Login { get; set; }
         public string Username { get; set; }
         public string Role { get; set; }
-        // TODO: картинка
+        public int? IdImage { get; set; }
     }
 }
