@@ -13,5 +13,5 @@
 Существует возможность поиска заказов и исполнителей по тегам.
 
 Технологии:
-ASP.NET Core MVC
+ASP.NET Core MVC,
 Entity Framework (database-first)
